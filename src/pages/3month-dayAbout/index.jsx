@@ -48,7 +48,7 @@ const Month3AboutDay = () => {
           </div>
           <ul>
             <li>
-              Оплата за {month.toLowerCase()}
+              Оплата за {month && month.toLowerCase()}
             </li>
             <h1>100 893</h1>
             <p>
