@@ -1,0 +1,41 @@
+.sidebar{
+  width: 300px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  background: white;
+  padding: 0 25px;
+  position: fixed;
+  left: 0;
+  z-index: 100;
+  ul{
+    padding: 0;
+    li{
+      list-style: none;
+      padding: 14px 9px ;
+      &.active{
+        background: #5932EA;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgb(181, 181, 181);
+        a{
+          color: white;
+        }
+      }
+      a{
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        gap: 16px;
+        color: #9197B3;
+        font-size: 14px;
+        position: relative;
+        .right{
+          position: absolute;
+          right: 0;
+
+        }
+      }
+    }
+  }
+}

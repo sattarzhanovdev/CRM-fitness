@@ -1,0 +1,31 @@
+body{
+  background: #FAFBFF;
+  margin: 0;
+}
+
+*{
+  font-family: 'Gilroy Medium';
+}
+
+@font-face {
+  font-family: 'Gilroy Regular';
+  src: url('./assets/fonts/Gilroy-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Gilroy Medium';
+  src: url('./assets/fonts/Gilroy-Medium.ttf');
+}
+
+@font-face {
+  font-family: 'Gilroy Semi-bold';
+  src: url('./assets/fonts/Gilroy-SemiBold.ttf');
+}
+
+.main{
+  display: flex;
+}
+
+.content{
+  margin-left: 350px;
+}

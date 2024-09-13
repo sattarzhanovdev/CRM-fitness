@@ -1,0 +1,192 @@
+.container{
+  width: 100%;
+  height: 100vh;
+  padding: 62px 40px;
+  .tracking{
+    width: 968px;
+    display: flex;
+    background: white;
+    border-radius: 30px;
+    padding: 30px 50px;
+    justify-content: space-between;
+    div{
+      width: 300px;
+      display: flex;
+      align-items: center;
+      &:nth-child(1){
+        border-right: 1px solid #F0F0F0;
+      }
+      &:nth-child(2){
+        border-right: 1px solid #F0F0F0;
+      }
+      .icon{
+        width: 42px;
+        height: 42px;
+        padding: 20px;
+        background: linear-gradient(201.18deg, #D3FFE7 3.14%, #EFFFF6 86.04%);
+        border-radius: 50%;
+        img{
+          width: 42px;
+          height: 42px;
+        }
+      }
+      ul{
+        padding: 0;
+        margin: 0;
+        margin-left: 20px;
+        li{
+          list-style: none;
+          color: #ACACAC;
+
+        }
+        h1{
+          margin: 6px 0;
+        }
+        p{
+          margin: 0;
+          display: flex;
+          align-items: center;
+          gap: 3px;
+          font-family: 'Gilroy Regular';
+          span{
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-family: 'Gilroy Semi-bold';
+          }
+        }
+      }
+    }
+    .line{
+      width: 2px;
+      height: 80%;
+      background: #F0F0F0;
+    }
+  }
+
+  .clients{
+    width: 90%;
+    height: 100%;
+    background: white;
+    margin-top: 40px;
+    border-radius: 30px;
+    padding: 35px 40px;
+    .up{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .left{
+        h2{
+          margin: 0;
+          font-family: 'Gilroy Semi-bold';
+          font-size: 22px;
+        }
+        p{
+          margin: 0;
+          font-family: 'Gilroy Regular';
+          margin-top: 4px;
+          color: #16C098;
+          font-size: 14px;
+        }
+      }
+      .right{
+        display: flex;
+        align-items: center;
+        gap: 17px;
+        .search{
+          position: relative;
+          input{
+            width: 176px;
+            height: 38px;
+            background: #F9FBFF;
+            border: 1px solid #E7E7E7;
+            border-radius: 6px;
+            outline: none;
+            padding-left: 40px;
+          }
+          img{
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translate(0, -50%);
+          }
+        }
+        button{
+          width: 155px;
+          height: 40px;
+          border-radius: 4px;
+          border: 1px solid #00B087;
+          background: #F9FBFF;
+          color: #008767;
+          cursor: pointer;
+        }
+      }
+    }
+    table{
+      margin-top: 50px;
+
+      tr{
+        position: relative;
+        height: 60px;
+        &::before{
+          content: '';
+          width: 100%;
+          height: 1px;
+          background: #B5B7C0;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+        }
+        th{
+          font-family: 'Gilroy Regular';
+          color: #B5B7C0;
+          text-align: left;
+          padding-right: 40px;
+          &.name{
+            padding-right: 80px;
+          }
+        }
+        td{
+          font-family: 'Gilroy Regular';
+          &.freeze{
+            padding: 0 12px;
+            background: #FFFB26;
+          }
+          p{
+            width: 40px;
+            height: 26px;
+    
+            background: #16C09861;
+            border: 1px solid #00B087;
+            color: #008767;
+            border-radius: 4px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          div{
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            button{
+              width: 30px;
+              height: 30px;
+              border: 1px solid #A4A4A4;
+              background: #A4A4A4;
+              color: white;
+              border-radius: 4px;
+              cursor: pointer;
+              &.active{
+                border: 1px solid #00B087;
+                background: #16C09861;
+                color: #008767;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
