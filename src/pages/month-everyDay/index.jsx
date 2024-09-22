@@ -48,7 +48,7 @@ const MonthEveryDay = () => {
           </div>
           <ul>
             <li>
-              Оплата за {month && month.toLowerCase()}
+              Активные карты раздела
             </li>
             <h1>100 893</h1>
             <p>
@@ -65,7 +65,7 @@ const MonthEveryDay = () => {
           </div>
           <ul>
             <li>
-              Активные карты
+              Оплата за {month && month.toLowerCase()}
             </li>
             <h1>189</h1>
             <p>

@@ -10,6 +10,8 @@ import profileTick from './profile-tick.svg'
 import users from './users.svg'
 import monitor from './monitor.svg'
 import search from './search.svg'
+import edit from './edit.svg'
+import close from './close.svg'
 
 export const Icons = {
   user,
@@ -23,5 +25,7 @@ export const Icons = {
   profileTick,
   users,
   monitor,
-  search
+  search,
+  edit,
+  close
 }

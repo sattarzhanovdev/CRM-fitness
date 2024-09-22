@@ -3,10 +3,14 @@ import c from './style.module.scss'
 import { Icons } from '../../assets/icons'
 import { API } from '../../api'
 import { checkAttendens } from '../../helpers'
+import { Components } from '../../components'
 
 const MonthDayAbout = () => {
   const [ clients, setClients ] = React.useState(null)
+  const [ hour, setHour ] = React.useState('До')
   const [ dep, setDep ] = React.useState(null)
+  const [ active, setActive ] = React.useState(false)
+  const [ user, setUser ] = React.useState(null)
   const month = localStorage.getItem('month')
 
   React.useEffect(() => {
@@ -17,10 +21,10 @@ const MonthDayAbout = () => {
             id: id+1,
             ...item
           }
-        }).filter(item => item[1].aboutDay)
+        }).filter(item => item[1].aboutDay && item[1].type === hour)
         setClients(base)
       })
-  }, [dep])
+  }, [dep, hour])
 
   return (
     <div className={c.container}>
@@ -48,12 +52,12 @@ const MonthDayAbout = () => {
           </div>
           <ul>
             <li>
-              Оплата за {month && month .toLowerCase()}
+              Активные карты раздела
             </li>
-            <h1>100 893</h1>
+            <h1>189</h1>
             <p>
               <span>
-                <img src={Icons.low} alt="" /> 1%
+                <img src={Icons.high} alt="" /> 16%
               </span>
               за этот месяц
             </p>
@@ -65,9 +69,9 @@ const MonthDayAbout = () => {
           </div>
           <ul>
             <li>
-              Активные карты
+              Оплата за {month && month .toLowerCase()}            
             </li>
-            <h1>189</h1>
+            <h1>100 893 сом</h1>
             <p>
               <span>
                 <img src={Icons.low} alt="" /> 1%
@@ -95,11 +99,31 @@ const MonthDayAbout = () => {
         </div>
         <table>
           <tr>
-            <th>Номер клиента</th>
+            <th>№ клиента</th>
             <th className={c.name}>ФИО клиента</th>
             <th>Оплата</th>
-            <th>Остаток занятий</th>
-            <th>Занятия</th>
+            <th>Остаток</th>
+            <th>
+              <div>
+                Занятия
+                <div className={c.btns}>
+                  <button 
+                    onClick={() => setHour('До')}
+                    className={hour === 'До' ? c.active : ''}
+                  >
+                    До 12:00
+                  </button>
+                  <button 
+                    onClick={() => setHour('После')}
+                    className={hour === 'После' ? c.active : ''}
+                  >
+                    После 12:00
+                  </button>
+                </div>
+              </div>
+            </th>
+
+              
           </tr>
           {
             clients?.length > 0 ?
@@ -111,7 +135,9 @@ const MonthDayAbout = () => {
                 <td>
                   <p className={c.count}>
                     {
-                      item[1].attended ? item[1]?.sessions[item[1]?.sessions.length-1] - item[1]?.attended[item[1]?.attended.length-1] : 0
+                      item[1].attended ?
+                      item[1].sessions[item[1].sessions.length - 1] - item[1]?.attended[item[1].attended?.length - 1]?.num :
+                      12
                     }
                   </p>
                 </td>
@@ -121,15 +147,20 @@ const MonthDayAbout = () => {
                       item[1]?.sessions?.map((value, j) => (
                         <button 
                           key={j}
-                          className={item[1].attended && item[1].attended[item[1]?.attended?.length-1] >= value ? c.active : '' }
-                          onClick={() => {
-                            checkAttendens(item[0], value, setDep)
-                          }}
+                          className={item[1]?.attended && item[1]?.attended[j]?.type === 'checked'  ? c.active : item[1]?.attended[j]?.type === 'freezed' ? c.frozen : '' }
                         >
                           {value}
                         </button>
                       ))
                     }
+                    <li
+                      onClick={() => {
+                        setUser(item)
+                        setActive(true)
+                      }}
+                    >
+                      <img src={Icons.edit} alt="" />
+                    </li>
                   </div>
                 </td>
               </tr> 
@@ -142,6 +173,8 @@ const MonthDayAbout = () => {
           }
         </table>
       </div>
+
+      {active ? <Components.Edit user={user} setActive={setActive} setDep={setDep}/> : ""}
     </div>
   )
 }

@@ -10,7 +10,7 @@ axios.defaults.baseURL = 'https://crm-system-e5257-default-rtdb.asia-southeast1.
 function App() {
   React.useEffect(() => {
     const date = new Date()
-    const month = Months.find(item => item.id == date.getMonth() + 1 ? item.name : '').name
+    const month = Months.find(item => item.id === date.getMonth() + 1 ? item.name : '').name
     localStorage.setItem('month', month)
   }, [])
   return (

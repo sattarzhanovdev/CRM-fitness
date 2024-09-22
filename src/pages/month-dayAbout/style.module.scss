@@ -18,13 +18,14 @@
       }
       &:nth-child(2){
         border-right: 1px solid #F0F0F0;
-      }
+      } 
       .icon{
         width: 42px;
         height: 42px;
         padding: 20px;
         background: linear-gradient(201.18deg, #D3FFE7 3.14%, #EFFFF6 86.04%);
-        border-radius: 50%;
+        border-radius: 8px;
+        border: 0;
         img{
           width: 42px;
           height: 42px;
@@ -76,6 +77,9 @@
       align-items: center;
       justify-content: space-between;
       .left{
+        display: flex;
+        align-items: center;
+        gap: 11px;
         h2{
           margin: 0;
           font-family: 'Gilroy Semi-bold';
@@ -85,8 +89,11 @@
           margin: 0;
           font-family: 'Gilroy Regular';
           margin-top: 4px;
-          color: #16C098;
+          color: black;
+          background: #DEF5A3;
           font-size: 14px;
+          padding: 4px 12px;
+          border-radius: 4px;
         }
       }
       .right{
@@ -115,9 +122,9 @@
           width: 155px;
           height: 40px;
           border-radius: 4px;
-          border: 1px solid #00B087;
-          background: #F9FBFF;
-          color: #008767;
+          background: #DEF5A3;
+          border: 0;
+          color: black;
           cursor: pointer;
         }
       }
@@ -142,8 +149,34 @@
           color: #B5B7C0;
           text-align: left;
           padding-right: 40px;
+          &:nth-child(5){
+            padding-right: 0;
+          }
           &.name{
             padding-right: 80px;
+          }
+          div{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            .btns{
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              margin: 0;
+              padding: 0;
+              button{
+                padding: 4px 12px;
+                border-radius: 4px;
+                background: #DBDBDB;
+                border: 1px solid #DBDBDB;
+                &.active{
+                  background: #DEF5A3;
+                  border: 1px solid #DEF5A3;
+                  color: black;
+                }
+              }
+            }
           }
         }
         td{
@@ -155,9 +188,8 @@
             width: 40px;
             height: 26px;
     
-            background: #16C09861;
-            border: 1px solid #00B087;
-            color: #008767;
+            background: #DEF5A3;
+            color: black;
             border-radius: 4px;
             font-size: 14px;
             display: flex;
@@ -169,18 +201,28 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            li{
+              list-style: none;
+              cursor: pointer;
+              margin-left: 6px;
+            }
             button{
               width: 30px;
               height: 30px;
-              border: 1px solid #A4A4A4;
-              background: #A4A4A4;
+              border: 1px solid #DBDBDB;
+              background: #DBDBDB;
               color: white;
               border-radius: 4px;
               cursor: pointer;
               &.active{
-                border: 1px solid #00B087;
-                background: #16C09861;
-                color: #008767;
+                background: #DEF5A3;
+                border: 1px solid #DEF5A3;
+                color: black;
+              }
+              &.frozen{
+                border: 1px solid #EA6635;
+                color: white;
+                background: #EA6635;
               }
             }
           }

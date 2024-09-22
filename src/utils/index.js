@@ -28,11 +28,35 @@ export const PUBLIC_ROUTES = [
   },
   {
     id: 4,
-    title: 'Финансовый учет',
-    path: '/financial-report/',
+    title: '3 месяца/каждый день',
+    path: '/3months/everyDay/',
     page: <Pages.Report />,
-    icon: Icons.wallet ,
-    active: Icons.walletActive
+    icon: Icons.user ,
+    active: Icons.userActive
+  },
+  {
+    id: 5,
+    title: 'Единоразовые занятия',
+    path: '/once-lessons/',
+    page: <Pages.OnceLessons />,
+    icon: Icons.user ,
+    active: Icons.user
+  },
+  {
+    id: 6,
+    title: 'Финансы',
+    path: '/finances/',
+    page: <Pages.Finances />,
+    icon: Icons.user ,
+    active: Icons.userActive
+  },
+  {
+    id: 7,
+    title: 'Спортзал',
+    path: '/gym/',
+    page: <Pages.Gym />,
+    icon: Icons.user ,
+    active: Icons.userActive
   }
 ]
 
