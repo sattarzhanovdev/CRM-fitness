@@ -2,6 +2,7 @@ import React from 'react'
 import c from './style.module.scss'
 import { Icons } from '../../assets/icons'
 import { API } from '../../api'
+import { checkAttendens } from '../../helpers'
 import { Components } from '../../components'
 
 const Month3DayAbout = () => {
@@ -12,31 +13,38 @@ const Month3DayAbout = () => {
   const [ addActive, setAddActive ] = React.useState(false)
   const [ payments, setPayments ] = React.useState(0)
   const [ cards, setCards ] = React.useState(0)
+  const [ allCards, setAllCards ] = React.useState(0)
   const [ user, setUser ] = React.useState(null)
+  const [ search, setSearch ] = React.useState('')
   const month = localStorage.getItem('month')
 
   React.useEffect(() => {
     API.getClients()
       .then(res => {
-        const base = Object.entries(res.data).map((item, id) => {
-          return {
-            id: id+1,
-            ...item
-          }
-        }).filter(item => item[1].aboutDay3 && item[1].type === hour)
-        const data = Object.entries(res.data).map((item, id) => {
-          return {
-            id: id+1,
-            ...item
-          }
-        }).filter(item => item[1].aboutDay3)
-        const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
-        setCards(data.length)
-        setPayments(totalPayment)
-        setClients(base)
-        
+        if(res.data){
+          const base = Object.entries(res.data).map((item, id) => {
+            return {
+              id: id+1,
+              ...item
+            }
+          }).filter(item => item[1].aboutDay3 && item[1].type === hour)
+          const data = Object.entries(res.data).map((item, id) => {
+            return {
+              id: id+1,
+              ...item
+            }
+          }).filter(item => item[1].aboutDay3)
+          const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
+          console.log(totalPayment);
+          setCards(data.map(item => item[1].aboutDay3).length)
+          setPayments(totalPayment)
+          setClients(base)
+          setAllCards(Object.values(res.data).length)
+        }
       })
   }, [dep, hour])
+
+  const searchUser = search.length > 0 ? clients?.filter(item => item[1].name.toLowerCase().includes(search.toLowerCase())) : clients
 
   return (
     <div className={c.container}>
@@ -49,7 +57,7 @@ const Month3DayAbout = () => {
             <li>
               Активные карты
             </li>
-            <h1>1200</h1>
+            <h1>{allCards}</h1>
             <p>
               <span>
                 <img src={Icons.high} alt="" /> 16%
@@ -101,7 +109,11 @@ const Month3DayAbout = () => {
           </div>
           <div className={c.right}>
             <div className={c.search}>
-              <input type="text" placeholder='Найти'/>
+              <input
+                type="text"
+                placeholder='Найти'
+                onChange={e => setSearch(e.target.value)}
+              />
               <img src={Icons.search} alt="" />
             </div>
             <button onClick={() => setAddActive(true)}>
@@ -138,8 +150,8 @@ const Month3DayAbout = () => {
               
           </tr>
           {
-            clients?.length > 0 ?
-            clients?.map((item, i) => (
+            searchUser?.length > 0 ?
+            searchUser?.map((item, i) => (
               <tr key={i}>
                 <td>{item.id}</td>
                 <td>{item[1]?.name}</td>
@@ -187,7 +199,7 @@ const Month3DayAbout = () => {
       </div>
 
       {active ? <Components.Edit user={user} setActive={setActive} setDep={setDep}/> : ""}
-      {addActive ? <Components.Add clients={clients} setAddActive={setAddActive} setDep={setDep}/> : ""}
+      {addActive ? <Components.Add clients={clients} typeOfGym={"aboutDay3"} setAddActive={setAddActive}/> : ""}
     </div>
   )
 }

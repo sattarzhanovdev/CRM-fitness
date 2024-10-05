@@ -4,5 +4,6 @@ export const API = {
   getClients: () => axios.get('clients.json'),
   postClients: (data) => axios.post('clients.json', data),
   addAttended: (id, value) => axios.put(`clients/${id}/attended.json`, value),
-  deleteClient: (id) => axios.delete(`/clients/${id}/.json`)
+  deleteClient: (id) => axios.delete(`/clients/${id}/.json`),
+  addGym: (data) => axios.post('/gym/', data)
 }

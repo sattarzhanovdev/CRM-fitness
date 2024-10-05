@@ -24,13 +24,13 @@ const Once = () => {
             id: id+1,
             ...item
           }
-        }).filter(item => item[1].everyDay3 && item[1].type === hour)
+        }).filter(item => item[1].once && item[1].type === hour)
         const data = Object.entries(res.data).map((item, id) => {
           return {
             id: id+1,
             ...item
           }
-        }).filter(item => item[1].everyDay3)
+        }).filter(item => item[1].once)
         const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
         console.log(totalPayment);
         setCards(data.length)
@@ -91,24 +91,15 @@ const Once = () => {
         </div>
         <table>
           <tr>
-            <th>№ клиента</th>
-            <th className={c.name}>ФИО клиента</th>
+            <th>№ заказа</th>
             <th>Оплата</th>
             <th>Остаток</th>
-            <th>
-              <div>
-                Занятия
-              </div>
-            </th>
-
-              
           </tr>
           {
             clients?.length > 0 ?
             clients?.map((item, i) => (
               <tr key={i}>
                 <td>{item.id}</td>
-                <td>{item[1]?.name}</td>
                 <td>{item[1]?.payment}</td>
                 <td>
                   <p className={c.count}>
@@ -118,28 +109,6 @@ const Once = () => {
                       12
                     }
                   </p>
-                </td>
-                <td className={item[1].freeze ? c.freeze : ''}>
-                  <div>
-                    {
-                      item[1]?.sessions?.map((value, j) => (
-                        <button 
-                          key={j}
-                          className={item[1]?.attended && item[1]?.attended[j]?.type === 'checked'  ? c.active : item[1]?.attended[j]?.type === 'freezed' ? c.frozen : '' }
-                        >
-                          {value}
-                        </button>
-                      ))
-                    }
-                    <li
-                      onClick={() => {
-                        setUser(item)
-                        setActive(true)
-                      }}
-                    >
-                      <img src={Icons.edit} alt="" />
-                    </li>
-                  </div>
                 </td>
               </tr> 
             )) :
