@@ -2,9 +2,16 @@ import React from 'react'
 import c from './edit.module.scss'
 import { Icons } from '../../assets/icons'
 import { checkAttendens } from '../../helpers'
+import { API } from '../../api'
 
 const Edit = ({ user, setActive, setDep }) => {
   const [freeze, setFreeze] = React.useState(false)
+
+  const handleDelete = () => {
+    API.deleteClient(user[0])
+      .then(() => window.location.reload())
+    
+  }
 
   return (
     <div className={c.container}>
@@ -53,10 +60,10 @@ const Edit = ({ user, setActive, setDep }) => {
                       <button
                         className={c.check}
                         onClick={() => {
-                          checkAttendens(user[0], user[1]?.attended, user, setDep, 'checked')
+                          checkAttendens(user[0], user[1]?.attended, user, setDep, 'checked');
                           setTimeout(() => {
-                            window.location.reload()
-                          }, 1000)
+                            window.location.reload();
+                          }, 1000);
                         }}
                       >
                         Отметить
@@ -64,7 +71,11 @@ const Edit = ({ user, setActive, setDep }) => {
                     ) : (
                       user[1].attended ? (
                         user[1].attended[user[1].attended.length - 1].num >= item ? (
-                          user[1]?.attended[i]?.type === 'freezed' ? <button className={c.frozen}>Заморожено</button>: <p>{user[1]?.attended[i]?.time}</p>
+                          user[1]?.attended[i]?.type === 'freezed' ? (
+                            <button className={c.frozen}>Заморожено</button>
+                          ) : (
+                            <p>{user[1]?.attended[i]?.time}</p>
+                          )
                         ) : (
                           i === user[1].attended.length && !freeze ? (
                             <button
@@ -73,15 +84,14 @@ const Edit = ({ user, setActive, setDep }) => {
                             >
                               Отметить
                             </button>
-                          ) : user[1].attended.length && freeze ? (
+                          ) : user[1].attended.length && freeze && !user[1].freezed ? ( 
                             <button
                               className={c.freeze}
                               onClick={() => checkAttendens(user[0], user[1]?.attended, user, setDep, 'freezed')}
                             >
                               Заморозить
                             </button>
-                          ) :
-                          null
+                          ) : null
                         )
                       ) : (
                         <p></p>
@@ -95,7 +105,7 @@ const Edit = ({ user, setActive, setDep }) => {
         </div>
         <div className={c.btns}>
           <button>Сохранить</button>
-          <button>Удалить</button>
+          <button onClick={() => handleDelete()}>Удалить</button>
           <button onClick={() => setFreeze(!freeze)}>{freeze ? 'Отменить' : 'Режим заморозки'}</button>
         </div>
       </div>

@@ -3,24 +3,48 @@ import c from './style.module.scss'
 import { Icons } from '../../assets/icons'
 import { API } from '../../api'
 import { checkAttendens } from '../../helpers'
+import { Components } from '../../components'
 
 const MonthEveryDay = () => {
   const [ clients, setClients ] = React.useState(null)
+  const [ hour, setHour ] = React.useState('До')
   const [ dep, setDep ] = React.useState(null)
+  const [ active, setActive ] = React.useState(false)
+  const [ addActive, setAddActive ] = React.useState(false)
+  const [ payments, setPayments ] = React.useState(0)
+  const [ cards, setCards ] = React.useState(0)
+  const [ allCards, setAllCards ] = React.useState(0)
+  const [ user, setUser ] = React.useState(null)
+  const [ search, setSearch ] = React.useState('')
   const month = localStorage.getItem('month')
 
   React.useEffect(() => {
     API.getClients()
       .then(res => {
-        const base = Object.entries(res.data).map((item, id) => {
-          return {
-            id: id+1,
-            ...item
-          }
-        }).filter(item => item[1].everyDay)
-        setClients(base)
+        if(res.data){
+          const base = Object.entries(res.data).map((item, id) => {
+            return {
+              id: id+1,
+              ...item
+            }
+          }).filter(item => item[1].everyDay && item[1].type === hour)
+          const data = Object.entries(res.data).map((item, id) => {
+            return {
+              id: id+1,
+              ...item
+            }
+          }).filter(item => item[1].everyDay)
+          const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
+          console.log(totalPayment);
+          setCards(data.map(item => item[1].everyDay).length)
+          setPayments(totalPayment)
+          setClients(base)
+          setAllCards(Object.values(res.data).length)
+        }
       })
-  }, [dep])
+  }, [dep, hour])
+
+  const searchUser = search.length > 0 ? clients?.filter(item => item[1].name.toLowerCase().includes(search.toLowerCase())) : clients
 
   return (
     <div className={c.container}>
@@ -33,7 +57,7 @@ const MonthEveryDay = () => {
             <li>
               Активные карты
             </li>
-            <h1>1200</h1>
+            <h1>{allCards}</h1>
             <p>
               <span>
                 <img src={Icons.high} alt="" /> 16%
@@ -50,10 +74,10 @@ const MonthEveryDay = () => {
             <li>
               Активные карты раздела
             </li>
-            <h1>100 893</h1>
+            <h1>{cards}</h1>
             <p>
               <span>
-                <img src={Icons.low} alt="" /> 1%
+                <img src={Icons.high} alt="" /> 16%
               </span>
               за этот месяц
             </p>
@@ -65,9 +89,9 @@ const MonthEveryDay = () => {
           </div>
           <ul>
             <li>
-              Оплата за {month && month.toLowerCase()}
+              Оплата за {month && month .toLowerCase()}            
             </li>
-            <h1>189</h1>
+            <h1>{payments} сом</h1>
             <p>
               <span>
                 <img src={Icons.low} alt="" /> 1%
@@ -85,25 +109,49 @@ const MonthEveryDay = () => {
           </div>
           <div className={c.right}>
             <div className={c.search}>
-              <input type="text" placeholder='Найти'/>
+              <input
+                type="text"
+                placeholder='Найти'
+                onChange={e => setSearch(e.target.value)}
+              />
               <img src={Icons.search} alt="" />
             </div>
-            <button>
+            <button onClick={() => setAddActive(true)}>
               Добавить клиента
             </button>
           </div>
         </div>
         <table>
           <tr>
-            <th>Номер клиента</th>
+            <th>№ клиента</th>
             <th className={c.name}>ФИО клиента</th>
             <th>Оплата</th>
-            <th>Остаток занятий</th>
-            <th>Занятия</th>
+            <th>Остаток</th>
+            <th>
+              <div>
+                Занятия
+                <div className={c.btns}>
+                  <button 
+                    onClick={() => setHour('До')}
+                    className={hour === 'До' ? c.active : ''}
+                  >
+                    До 12:00
+                  </button>
+                  <button 
+                    onClick={() => setHour('После')}
+                    className={hour === 'После' ? c.active : ''}
+                  >
+                    После 12:00
+                  </button>
+                </div>
+              </div>
+            </th>
+
+              
           </tr>
           {
-            clients?.length > 0 ?
-            clients?.map((item, i) => (
+            searchUser?.length > 0 ?
+            searchUser?.map((item, i) => (
               <tr key={i}>
                 <td>{item.id}</td>
                 <td>{item[1]?.name}</td>
@@ -111,7 +159,9 @@ const MonthEveryDay = () => {
                 <td>
                   <p className={c.count}>
                     {
-                      item[1].attended ? item[1]?.sessions[item[1]?.sessions.length-1] - item[1]?.attended[item[1]?.attended.length-1] : 0
+                      item[1].attended ?
+                      item[1].sessions[item[1].sessions.length - 1] - item[1]?.attended[item[1].attended?.length - 1]?.num :
+                      12
                     }
                   </p>
                 </td>
@@ -121,16 +171,20 @@ const MonthEveryDay = () => {
                       item[1]?.sessions?.map((value, j) => (
                         <button 
                           key={j}
-                          className={item[1].attended && item[1].attended[item[1]?.attended?.length-1] >= value ? c.active : '' }
-                          onClick={() => {
-                            checkAttendens(item[0], value, setDep)
-                          }}
-                          disabled={item[1].freeze}
+                          className={item[1]?.attended && item[1]?.attended[j]?.type === 'checked'  ? c.active : item[1]?.attended[j]?.type === 'freezed' ? c.frozen : '' }
                         >
                           {value}
                         </button>
                       ))
                     }
+                    <li
+                      onClick={() => {
+                        setUser(item)
+                        setActive(true)
+                      }}
+                    >
+                      <img src={Icons.edit} alt="" />
+                    </li>
                   </div>
                 </td>
               </tr> 
@@ -143,6 +197,9 @@ const MonthEveryDay = () => {
           }
         </table>
       </div>
+
+      {active ? <Components.Edit user={user} setActive={setActive} setDep={setDep}/> : ""}
+      {addActive ? <Components.Add clients={clients} typeOfGym={'everyDay'} setAddActive={setAddActive}/> : ""}
     </div>
   )
 }

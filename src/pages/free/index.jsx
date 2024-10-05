@@ -5,7 +5,7 @@ import { API } from '../../api'
 import { checkAttendens } from '../../helpers'
 import { Components } from '../../components'
 
-const MonthDayAbout = () => {
+const Free = () => {
   const [ clients, setClients ] = React.useState(null)
   const [ hour, setHour ] = React.useState('До')
   const [ dep, setDep ] = React.useState(null)
@@ -13,38 +13,31 @@ const MonthDayAbout = () => {
   const [ addActive, setAddActive ] = React.useState(false)
   const [ payments, setPayments ] = React.useState(0)
   const [ cards, setCards ] = React.useState(0)
-  const [ allCards, setAllCards ] = React.useState(0)
   const [ user, setUser ] = React.useState(null)
-  const [ search, setSearch ] = React.useState('')
   const month = localStorage.getItem('month')
 
   React.useEffect(() => {
     API.getClients()
       .then(res => {
-        if(res.data){
-          const base = Object.entries(res.data).map((item, id) => {
-            return {
-              id: id+1,
-              ...item
-            }
-          }).filter(item => item[1].aboutDay && item[1].type === hour)
-          const data = Object.entries(res.data).map((item, id) => {
-            return {
-              id: id+1,
-              ...item
-            }
-          }).filter(item => item[1].aboutDay)
-          const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
-          console.log(totalPayment);
-          setCards(data.map(item => item[1].aboutDay).length)
-          setPayments(totalPayment)
-          setClients(base)
-          setAllCards(Object.values(res.data).length)
-        }
+        const base = Object.entries(res.data).map((item, id) => {
+          return {
+            id: id+1,
+            ...item
+          }
+        }).filter(item => item[1].aboutDay && item[1].type === hour)
+        const data = Object.entries(res.data).map((item, id) => {
+          return {
+            id: id+1,
+            ...item
+          }
+        }).filter(item => item[1].aboutDay)
+        const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
+        console.log(totalPayment);
+        setCards(data.length)
+        setPayments(totalPayment)
+        setClients(base)
       })
   }, [dep, hour])
-
-  const searchUser = search.length > 0 ? clients?.filter(item => item[1].name.toLowerCase().includes(search.toLowerCase())) : clients
 
   return (
     <div className={c.container}>
@@ -57,7 +50,7 @@ const MonthDayAbout = () => {
             <li>
               Активные карты
             </li>
-            <h1>{allCards}</h1>
+            <h1>1200</h1>
             <p>
               <span>
                 <img src={Icons.high} alt="" /> 16%
@@ -109,11 +102,7 @@ const MonthDayAbout = () => {
           </div>
           <div className={c.right}>
             <div className={c.search}>
-              <input
-                type="text"
-                placeholder='Найти'
-                onChange={e => setSearch(e.target.value)}
-              />
+              <input type="text" placeholder='Найти'/>
               <img src={Icons.search} alt="" />
             </div>
             <button onClick={() => setAddActive(true)}>
@@ -150,8 +139,8 @@ const MonthDayAbout = () => {
               
           </tr>
           {
-            searchUser?.length > 0 ?
-            searchUser?.map((item, i) => (
+            clients?.length > 0 ?
+            clients?.map((item, i) => (
               <tr key={i}>
                 <td>{item.id}</td>
                 <td>{item[1]?.name}</td>
@@ -204,4 +193,4 @@ const MonthDayAbout = () => {
   )
 }
 
-export default MonthDayAbout
+export default Free

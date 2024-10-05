@@ -5,7 +5,7 @@ import { API } from '../../api'
 import { checkAttendens } from '../../helpers'
 import { Components } from '../../components'
 
-const MonthDayAbout = () => {
+const Once = () => {
   const [ clients, setClients ] = React.useState(null)
   const [ hour, setHour ] = React.useState('До')
   const [ dep, setDep ] = React.useState(null)
@@ -13,59 +13,35 @@ const MonthDayAbout = () => {
   const [ addActive, setAddActive ] = React.useState(false)
   const [ payments, setPayments ] = React.useState(0)
   const [ cards, setCards ] = React.useState(0)
-  const [ allCards, setAllCards ] = React.useState(0)
   const [ user, setUser ] = React.useState(null)
-  const [ search, setSearch ] = React.useState('')
   const month = localStorage.getItem('month')
 
   React.useEffect(() => {
     API.getClients()
       .then(res => {
-        if(res.data){
-          const base = Object.entries(res.data).map((item, id) => {
-            return {
-              id: id+1,
-              ...item
-            }
-          }).filter(item => item[1].aboutDay && item[1].type === hour)
-          const data = Object.entries(res.data).map((item, id) => {
-            return {
-              id: id+1,
-              ...item
-            }
-          }).filter(item => item[1].aboutDay)
-          const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
-          console.log(totalPayment);
-          setCards(data.map(item => item[1].aboutDay).length)
-          setPayments(totalPayment)
-          setClients(base)
-          setAllCards(Object.values(res.data).length)
-        }
+        const base = Object.entries(res.data).map((item, id) => {
+          return {
+            id: id+1,
+            ...item
+          }
+        }).filter(item => item[1].everyDay3 && item[1].type === hour)
+        const data = Object.entries(res.data).map((item, id) => {
+          return {
+            id: id+1,
+            ...item
+          }
+        }).filter(item => item[1].everyDay3)
+        const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
+        console.log(totalPayment);
+        setCards(data.length)
+        setPayments(totalPayment)
+        setClients(base)
       })
   }, [dep, hour])
-
-  const searchUser = search.length > 0 ? clients?.filter(item => item[1].name.toLowerCase().includes(search.toLowerCase())) : clients
 
   return (
     <div className={c.container}>
       <div className={c.tracking}>
-        <div>
-          <div className={c.icon}>
-            <img src={Icons.users} alt=""/>
-          </div>
-          <ul>
-            <li>
-              Активные карты
-            </li>
-            <h1>{allCards}</h1>
-            <p>
-              <span>
-                <img src={Icons.high} alt="" /> 16%
-              </span>
-              за этот месяц
-            </p>
-          </ul>
-        </div>
         <div>
           <div className={c.icon}>
             <img src={Icons.profileTick} alt=""/>
@@ -104,18 +80,10 @@ const MonthDayAbout = () => {
       <div className={c.clients}>
         <div className={c.up}>
           <div className={c.left}>
-            <h2>Оплата за 1 месяц | Через день</h2>
+            <h2>Единоразовые занятия</h2>
             <p>{month}</p> 
           </div>
           <div className={c.right}>
-            <div className={c.search}>
-              <input
-                type="text"
-                placeholder='Найти'
-                onChange={e => setSearch(e.target.value)}
-              />
-              <img src={Icons.search} alt="" />
-            </div>
             <button onClick={() => setAddActive(true)}>
               Добавить клиента
             </button>
@@ -130,28 +98,14 @@ const MonthDayAbout = () => {
             <th>
               <div>
                 Занятия
-                <div className={c.btns}>
-                  <button 
-                    onClick={() => setHour('До')}
-                    className={hour === 'До' ? c.active : ''}
-                  >
-                    До 12:00
-                  </button>
-                  <button 
-                    onClick={() => setHour('После')}
-                    className={hour === 'После' ? c.active : ''}
-                  >
-                    После 12:00
-                  </button>
-                </div>
               </div>
             </th>
 
               
           </tr>
           {
-            searchUser?.length > 0 ?
-            searchUser?.map((item, i) => (
+            clients?.length > 0 ?
+            clients?.map((item, i) => (
               <tr key={i}>
                 <td>{item.id}</td>
                 <td>{item[1]?.name}</td>
@@ -199,9 +153,9 @@ const MonthDayAbout = () => {
       </div>
 
       {active ? <Components.Edit user={user} setActive={setActive} setDep={setDep}/> : ""}
-      {addActive ? <Components.Add clients={clients} setAddActive={setAddActive}/> : ""}
+      {addActive ? <Components.Add clients={clients} setAddActive={setAddActive} typeOfGym={'once'}/> : ""}
     </div>
   )
 }
 
-export default MonthDayAbout
+export default Once

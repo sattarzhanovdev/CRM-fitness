@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   background: rgba($color: black, $alpha: .7);
@@ -47,7 +47,7 @@
       }
     }
     .main{
-      width: 350px;
+      width: 360px;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -99,6 +99,30 @@
           border: 1px solid #B4B4B4;
           border-radius: 6px;
           outline: none;
+        }
+        select{
+          width: 220px;
+          height: 32px;
+          padding-left: 12px;
+          margin-left: 10px;
+          outline: none;
+          cursor: pointer;
+        }
+        ul{
+          width: 220px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          span{
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: #DBDBDB;
+            font-size: 14px;
+            cursor: pointer;
+            &.active{
+              background: #DEF5A3;
+            }
+          }
         }
       }
     }

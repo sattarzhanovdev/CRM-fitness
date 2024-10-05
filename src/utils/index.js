@@ -30,20 +30,28 @@ export const PUBLIC_ROUTES = [
     id: 4,
     title: '3 месяца/каждый день',
     path: '/3months/everyDay/',
-    page: <Pages.Report />,
+    page: <Pages.Month3EveryDay />,
     icon: Icons.user ,
     active: Icons.userActive
   },
   {
     id: 5,
+    title: '12 месяцев/безлимит',
+    path: '/12months/free/',
+    page: <Pages.Free />,
+    icon: Icons.user ,
+    active: Icons.userActive
+  },
+  {
+    id: 6,
     title: 'Единоразовые занятия',
     path: '/once-lessons/',
-    page: <Pages.OnceLessons />,
+    page: <Pages.Once />,
     icon: Icons.user ,
     active: Icons.user
   },
   {
-    id: 6,
+    id: 7,
     title: 'Финансы',
     path: '/finances/',
     page: <Pages.Finances />,
@@ -51,7 +59,7 @@ export const PUBLIC_ROUTES = [
     active: Icons.userActive
   },
   {
-    id: 7,
+    id: 8,
     title: 'Спортзал',
     path: '/gym/',
     page: <Pages.Gym />,
