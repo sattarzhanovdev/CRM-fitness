@@ -7,7 +7,7 @@ import { API } from '../../api';
 
 const Add = ({clients, setAddActive, typeOfGym}) => {
   const [ phone, setPhone ] = React.useState('')
-  const [ pay, setPay ] = React.useState(3000)
+  const [ pay, setPay ] = React.useState(2500)
   const [ clientsId, setClientsId ] = React.useState(1)
 
   const {
@@ -15,6 +15,8 @@ const Add = ({clients, setAddActive, typeOfGym}) => {
     register,
     reset
   } = useForm()
+
+  const date = new Date()
 
   const addClient = (value) => {
     const data = {
@@ -30,7 +32,10 @@ const Add = ({clients, setAddActive, typeOfGym}) => {
       "everyDay": typeOfGym === 'everyDay',
       "free": typeOfGym === 'free',
       "everyDay3": typeOfGym === 'everyDay3',
-      "once": typeOfGym === 'once'
+      "once": typeOfGym === 'once',
+      "month": date.getMonth() + 1,
+      "day": date.getDay(),
+      "year": date.getFullYear()
     }
 
     API.postClients(data)
@@ -86,27 +91,75 @@ const Add = ({clients, setAddActive, typeOfGym}) => {
           </div>
           <div>
             <p>Оплата</p>
-            <ul>
-              <span 
-                className={pay === 3000 ? c.active : ''}
-                onClick={() => setPay(3000)}
-              >
-                3000
-              </span>
-              <span 
-                className={pay === 3500 ? c.active : ''}
-                onClick={() => setPay(3500)}
-              >
-                3500
-              </span>
-            </ul>
+            {
+              typeOfGym === 'aboutDay' ?
+              <ul>
+                <span 
+                  className={pay === 2500 ? c.active : ''}
+                  onClick={() => setPay(2500)}
+                >
+                  2500
+                </span>
+                <span 
+                  className={pay === 3500 ? c.active : ''}
+                  onClick={() => setPay(3500)}
+                >
+                  3500
+                </span>
+              </ul> :
+              typeOfGym === 'everyDay' ?
+              <ul>
+                <span 
+                  className={pay === 3500 ? c.active : ''}
+                  onClick={() => setPay(3500)}
+                >
+                  3500
+                </span>
+                <span 
+                  className={pay === 4000 ? c.active : ''}
+                  onClick={() => setPay(4000)}
+                >
+                  4000
+                </span>
+              </ul> :
+              typeOfGym === "aboutDay3" ?
+              <ul>
+                <span 
+                  className={pay === 2500 ? c.active : ''}
+                  onClick={() => setPay(2500)}
+                >
+                  2500
+                </span>
+                <span 
+                  className={pay === 3500 ? c.active : ''}
+                  onClick={() => setPay(3500)}
+                >
+                  3500
+                </span>
+              </ul> :
+              typeOfGym === 'everyday' ?
+              <ul>
+                <span 
+                  className={pay === 3500 ? c.active : ''}
+                  onClick={() => setPay(3500)}
+                >
+                  2500
+                </span>
+                <span 
+                  className={pay === 4000 ? c.active : ''}
+                  onClick={() => setPay(4000)}
+                >
+                  3500
+                </span>
+              </ul> : ''
+            }
             {/* <input type="text" placeholder='Введите сумму оплаты' {...register('payment')} /> */}
           </div>
           <div>
             <p>Тип посещения</p>
             <select {...register('type')}>
-              <option value={'До'}>До 12:00</option>
-              <option value={'После'}>После 12:00</option>
+              <option value={'До'}>До 14:00</option>
+              <option value={'После'}>После 14:00</option>
             </select>
           </div>
           <div>

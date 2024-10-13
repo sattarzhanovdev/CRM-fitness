@@ -135,13 +135,13 @@ const MonthDayAbout = () => {
                     onClick={() => setHour('До')}
                     className={hour === 'До' ? c.active : ''}
                   >
-                    До 12:00
+                    До 14:00
                   </button>
                   <button 
                     onClick={() => setHour('После')}
                     className={hour === 'После' ? c.active : ''}
                   >
-                    После 12:00
+                    После 14:00
                   </button>
                 </div>
               </div>
@@ -199,7 +199,7 @@ const MonthDayAbout = () => {
       </div>
 
       {active ? <Components.Edit user={user} setActive={setActive} setDep={setDep}/> : ""}
-      {addActive ? <Components.Add clients={clients} setAddActive={setAddActive}/> : ""}
+      {addActive ? <Components.Add clients={clients} setAddActive={setAddActive} typeOfGym={'aboutDay'}/> : ""}
     </div>
   )
 }
