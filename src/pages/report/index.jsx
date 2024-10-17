@@ -45,42 +45,44 @@ const Report = () => {
   React.useEffect(() => {
     API.getClients()
       .then(res => {
-        const base = Object.entries(res.data).map((item, id) => {
-          return {
-            id: id+1, 
-            ...item
-          }
-        })
-
-        const baseAboutDay = base?.filter(item => item[1].aboutDay)
-        const baseAboutDay3 = base?.filter(item => item[1].aboutDay3)
-        const baseEveryDay = base?.filter(item => item[1].everyDay)
-        const baseEveryDay3 = base?.filter(item => item[1].everyDay3)
-        const baseOnce = base?.filter(item => item[1].once)
-        const baseGym = base?.filter(item => item[1].gym)
-        const baseFree = base?.filter(item => item[1].free)
-
-        setBenefit(base.reduce((a, b) => a + Number(b[1]?.payment), 0))
-        
-        setBenefits({
-          aboutDay: baseAboutDay.reduce((a, b) => a + Number(b[1]?.payment), 0),
-          aboutDay3: baseAboutDay3.reduce((a, b) => a + Number(b[1]?.payment), 0),
-          everyDay: baseEveryDay.reduce((a, b) => a + Number(b[1]?.payment), 0),
-          everyDay3: baseEveryDay3.reduce((a, b) => a + Number(b[1]?.payment), 0),
-          once: baseOnce.reduce((a, b) => a + Number(b[1]?.payment), 0),
-          gym: baseGym.reduce((a, b) => a + Number(b[1]?.payment), 0),
-          free: baseFree.reduce((a, b) => a + Number(b[1]?.payment), 0),
-
-          aboutDayCards: baseAboutDay.length,
-          aboutDay3Cards: baseAboutDay3.length,
-          everyDayCards: baseEveryDay.length,
-          everyDay3Cards: baseEveryDay3.length,
-          gymCards: baseGym.length,
-          onceCards: baseOnce.length,
-          freeCards: baseFree.length
-        })
-
-        setTurnover(base.length)
+        if(res.data){
+          const base = Object.entries(res.data).map((item, id) => {
+            return {
+              id: id+1, 
+              ...item
+            }
+          })
+  
+          const baseAboutDay = base?.filter(item => item[1].aboutDay)
+          const baseAboutDay3 = base?.filter(item => item[1].aboutDay3)
+          const baseEveryDay = base?.filter(item => item[1].everyDay)
+          const baseEveryDay3 = base?.filter(item => item[1].everyDay3)
+          const baseOnce = base?.filter(item => item[1].once)
+          const baseGym = base?.filter(item => item[1].gym)
+          const baseFree = base?.filter(item => item[1].free)
+  
+          setBenefit(base.reduce((a, b) => a + Number(b[1]?.payment), 0))
+          
+          setBenefits({
+            aboutDay: baseAboutDay.reduce((a, b) => a + Number(b[1]?.payment), 0),
+            aboutDay3: baseAboutDay3.reduce((a, b) => a + Number(b[1]?.payment), 0),
+            everyDay: baseEveryDay.reduce((a, b) => a + Number(b[1]?.payment), 0),
+            everyDay3: baseEveryDay3.reduce((a, b) => a + Number(b[1]?.payment), 0),
+            once: baseOnce.reduce((a, b) => a + Number(b[1]?.payment), 0),
+            gym: baseGym.reduce((a, b) => a + Number(b[1]?.payment), 0),
+            free: baseFree.reduce((a, b) => a + Number(b[1]?.payment), 0),
+  
+            aboutDayCards: baseAboutDay.length,
+            aboutDay3Cards: baseAboutDay3.length,
+            everyDayCards: baseEveryDay.length,
+            everyDay3Cards: baseEveryDay3.length,
+            gymCards: baseGym.length,
+            onceCards: baseOnce.length,
+            freeCards: baseFree.length
+          })
+  
+          setTurnover(base.length)
+        }
       })
 
     API.getExpenses(Months.find(item => item.id === monthRep).eng)

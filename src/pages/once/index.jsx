@@ -19,23 +19,25 @@ const Once = () => {
   React.useEffect(() => {
     API.getClients()
       .then(res => {
-        const base = Object.entries(res.data).map((item, id) => {
-          return {
-            id: id+1,
-            ...item
-          }
-        }).filter(item => item[1].once && item[1].type === hour)
-        const data = Object.entries(res.data).map((item, id) => {
-          return {
-            id: id+1,
-            ...item
-          }
-        }).filter(item => item[1].once)
-        const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
-        console.log(totalPayment);
-        setCards(data.length)
-        setPayments(totalPayment)
-        setClients(base)
+        if(res.data){
+          const base = Object.entries(res.data).map((item, id) => {
+            return {
+              id: id+1,
+              ...item
+            }
+          }).filter(item => item[1].once && item[1].type === hour)
+          const data = Object.entries(res.data).map((item, id) => {
+            return {
+              id: id+1,
+              ...item
+            }
+          }).filter(item => item[1].once)
+          const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
+          console.log(totalPayment);
+          setCards(data.length)
+          setPayments(totalPayment)
+          setClients(base)
+        }
       })
   }, [dep, hour])
 
