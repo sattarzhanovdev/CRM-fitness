@@ -4,8 +4,9 @@ import { Icons } from '../../assets/icons'
 import { API } from '../../api'
 import { checkAttendens } from '../../helpers'
 import { Components } from '../../components'
+import { Months } from '../../utils'
 
-const Month3DayAbout = () => {
+const FreeEveryDay = () => {
   const [ clients, setClients ] = React.useState(null)
   const [ hour, setHour ] = React.useState('До')
   const [ dep, setDep ] = React.useState(null)
@@ -27,16 +28,16 @@ const Month3DayAbout = () => {
               id: id+1,
               ...item
             }
-          }).filter(item => item[1].aboutDay3 && item[1].type === hour)
+          }).filter(item => item[1].freeEveryDay)
           const data = Object.entries(res.data).map((item, id) => {
             return {
               id: id+1,
               ...item
             }
-          }).filter(item => item[1].aboutDay3)
+          }).filter(item => item[1].freeEveryDay)
           const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
           console.log(totalPayment);
-          setCards(data.map(item => item[1].aboutDay3).length)
+          setCards(data.map(item => item[1].freeEveryDay).length)
           setPayments(totalPayment)
           setClients(base)
           setAllCards(Object.values(res.data).length)
@@ -45,6 +46,7 @@ const Month3DayAbout = () => {
   }, [dep, hour])
 
   const searchUser = search.length > 0 ? clients?.filter(item => item[1].name.toLowerCase().includes(search.toLowerCase())) : clients
+  
 
   return (
     <div className={c.container}>
@@ -104,7 +106,7 @@ const Month3DayAbout = () => {
       <div className={c.clients}>
         <div className={c.up}>
           <div className={c.left}>
-            <h2>Оплата за 3 месяца | Через день</h2>
+            <h2>Оплата за 12 месяцев | Каждый день</h2>
             <p>{month}</p> 
           </div>
           <div className={c.right}>
@@ -126,10 +128,11 @@ const Month3DayAbout = () => {
             <th>№ клиента</th>
             <th className={c.name}>ФИО клиента</th>
             <th>Оплата</th>
-            <th>Остаток</th>
-          
-
-              
+            <th>
+              <div>
+                Остаток
+              </div>
+            </th>          
           </tr>
           {
             searchUser?.length > 0 ?
@@ -138,36 +141,19 @@ const Month3DayAbout = () => {
                 <td>{item.id}</td>
                 <td>{item[1]?.name}</td>
                 <td>{item[1]?.payment}</td>
-                <td>
+                <td className={c.edit}>
                   <p className={c.count}>
-                    {
-                      item[1].attended ?
-                      item[1].sessions[item[1].sessions.length - 1] - item[1]?.attended[item[1].attended?.length - 1]?.num :
-                      12
-                    }
+                    {Months.find(value => value.id === item[1].month).name} {item[1].year} -
+                    {Months.find(value => value.id === item[1].month).name} {item[1].year+1} 
                   </p>
-                </td>
-                <td className={item[1].freeze ? c.freeze : ''}>
-                  <div>
-                    {
-                      item[1]?.sessions.slice(0, 12)?.map((value, j) => (
-                        <button 
-                          key={j}
-                          className={item[1]?.attended && item[1]?.attended[j]?.type === 'checked'  ? c.active : item[1]?.attended[j]?.type === 'freezed' ? c.frozen : '' }
-                        >
-                          {value}
-                        </button>
-                      ))
-                    }
-                    <li
-                      onClick={() => {
-                        setUser(item)
-                        setActive(true)
-                      }}
-                    >
-                      <img src={Icons.edit} alt="" />
-                    </li>
-                  </div>
+                  <li
+                    onClick={() => {
+                      setUser(item)
+                      setActive(true)
+                    }}
+                  >
+                    <img src={Icons.edit} alt="" />
+                  </li>
                 </td>
               </tr> 
             )) :
@@ -181,9 +167,9 @@ const Month3DayAbout = () => {
       </div>
 
       {active ? <Components.Edit user={user} setActive={setActive} setDep={setDep}/> : ""}
-      {addActive ? <Components.Add clients={clients} typeOfGym={"aboutDay3"} setAddActive={setAddActive}/> : ""}
+      {addActive ? <Components.Add clients={clients} typeOfGym={"freeEveryDay"} setAddActive={setAddActive}/> : ""}
     </div>
   )
 }
 
-export default Month3DayAbout
+export default FreeEveryDay

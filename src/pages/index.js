@@ -6,7 +6,8 @@ import Report from "./report";
 import Finances from "./report";
 import Gym from "./gym";
 import Once from "./once";
-import Free from "./free";
+import FreeDayAbout from "./freeDayAbout";
+import FreeEveryDay from "./freeEveryDay";
 
 export const Pages = {
   MonthDayAbout,
@@ -17,5 +18,6 @@ export const Pages = {
   Finances, 
   Gym,
   Once,
-  Free
+  FreeDayAbout,
+  FreeEveryDay
 }

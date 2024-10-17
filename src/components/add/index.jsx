@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { IMaskInput } from "react-imask";
 import { API } from '../../api';
 
-const Add = ({clients, setAddActive, typeOfGym}) => {
+const Add = ({clients, typeOfGym, setAddActive}) => {
   const [ phone, setPhone ] = React.useState('')
   const [ pay, setPay ] = React.useState(2500)
   const [ clientsId, setClientsId ] = React.useState(1)
@@ -18,19 +18,29 @@ const Add = ({clients, setAddActive, typeOfGym}) => {
 
   const date = new Date()
 
+  
   const addClient = (value) => {
+    const arr = []
+  
+    const num = typeOfGym === 'once' ? 1 : typeOfGym === 'aboutDay' ? 12 : typeOfGym === 'aboutDay3' ? 12*3 : typeOfGym === 'everyDay' ? 30 : typeOfGym === 'everyDay3' ? 30*3 : 1 
+
+    for(let i = 0; i < num; i++){
+      arr.push(i+1)
+    }
+
     const data = {
       "name": value.name,
       "phone_number": phone,
       "type": value.type,
       "payment": pay,
-      "sessions": typeOfGym === 'once' ? [1] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "sessions": arr,
       "attended": "",
       "freeze": false,
       "aboutDay": typeOfGym === 'aboutDay',
       "aboutDay3": typeOfGym === 'aboutDay3',
       "everyDay": typeOfGym === 'everyDay',
-      "free": typeOfGym === 'free',
+      "freeEveryDay": typeOfGym === 'freeEveryDay',
+      "freeAboutDay": typeOfGym === 'freeDayAbout',
       "everyDay3": typeOfGym === 'everyDay3',
       "once": typeOfGym === 'once',
       "month": date.getMonth() + 1,
@@ -125,44 +135,54 @@ const Add = ({clients, setAddActive, typeOfGym}) => {
               typeOfGym === "aboutDay3" ?
               <ul>
                 <span 
-                  className={pay === 2500 ? c.active : ''}
-                  onClick={() => setPay(2500)}
+                  className={pay === 7500 ? c.active : ''}
+                  onClick={() => setPay(7500)}
                 >
-                  2500
-                </span>
-                <span 
-                  className={pay === 3500 ? c.active : ''}
-                  onClick={() => setPay(3500)}
-                >
-                  3500
+                  7500
                 </span>
               </ul> :
-              typeOfGym === 'everyday' ?
+              typeOfGym === 'everyDay3' ?
               <ul>
                 <span 
-                  className={pay === 3500 ? c.active : ''}
-                  onClick={() => setPay(3500)}
+                  className={pay === 10000 ? c.active : ''}
+                  onClick={() => setPay(10000)}
                 >
-                  2500
+                  10000
                 </span>
+              </ul> :
+              typeOfGym === 'freeDayAbout' ?
+              <ul>
                 <span 
-                  className={pay === 4000 ? c.active : ''}
-                  onClick={() => setPay(4000)}
+                  className={pay === 22000 ? c.active : ''}
+                  onClick={() => setPay(22000)}
                 >
-                  3500
+                  22000
+                </span>
+              </ul> :
+              typeOfGym === 'freeEveryDay' ?
+              <ul>
+                <span 
+                  className={pay === 33000 ? c.active : ''}
+                  onClick={() => setPay(33000)}
+                >
+                  33000
                 </span>
               </ul> : ''
             }
             {/* <input type="text" placeholder='Введите сумму оплаты' {...register('payment')} /> */}
           </div>
-          <div>
-            <p>Тип посещения</p>
-            <select {...register('type')}>
-              <option value={'До'}>До 14:00</option>
-              <option value={'После'}>После 14:00</option>
-            </select>
-          </div>
-          <div>
+          {
+              typeOfGym === 'everyDay' || typeOfGym === 'aboutDay' ?
+              <div>
+                <p>Тип посещения</p>
+                <select {...register('type')}>
+                  <option value={'До'}>До 14:00</option>
+                  <option value={'После'}>После 14:00</option>
+                </select>
+              </div> :
+              null
+          } 
+          <div className={c.save}>
             <button type='submit'>Сохранить</button>
           </div>
         </form>

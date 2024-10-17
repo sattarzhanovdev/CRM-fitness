@@ -10,9 +10,10 @@ axios.defaults.baseURL = 'https://crm-system-e5257-default-rtdb.asia-southeast1.
 
 function App() {
   const lastMonth = localStorage.getItem('lastMonth')
+  const month = localStorage.getItem('month')
 
+  const date = new Date()
   React.useEffect(() => {
-    const date = new Date()
     const newMonthID =  date.getMonth() + 1
     
     const newMonth =  Months.find(item => item.id === date.getMonth() + 1 ? item.name : '').name
@@ -31,11 +32,18 @@ function App() {
       }
       
       API.postReport(Months.find(item => item.id === Number(lastMonth))?.eng, data)
-      API.postExpenses(Months.find(item => item.id === Number(lastMonth))?.eng, {})
+      API.postExpenses(Months.find(item => item.id === Number(lastMonth))?.eng, date.getDate(), {})
+
     }else{
       // API.getReport()
       //   .then(res => res.data())
     }
+    API.getExpensesByDay(Months.find(item => item.name === month)?.eng, date.getDate())
+      .then(res => {
+        if(res.data === null){
+          API.postExpenses(Months.find(item => item.name === month)?.eng, date.getDate(), {name: '', summa: 0})
+        }
+      })
   }, [])
   return (
     <div className='main'>

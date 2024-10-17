@@ -5,7 +5,7 @@ import { API } from '../../api'
 import { checkAttendens } from '../../helpers'
 import { Components } from '../../components'
 
-const Free = () => {
+const FreeDayAbout = () => {
   const [ clients, setClients ] = React.useState(null)
   const [ hour, setHour ] = React.useState('До')
   const [ dep, setDep ] = React.useState(null)
@@ -27,16 +27,15 @@ const Free = () => {
               id: id+1,
               ...item
             }
-          }).filter(item => item[1].free && item[1].type === hour)
+          }).filter(item => item[1].freeAboutDay)
           const data = Object.entries(res.data).map((item, id) => {
             return {
               id: id+1,
               ...item
             }
-          }).filter(item => item[1].free)
+          }).filter(item => item[1].freeAboutDay)
           const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
-          console.log(totalPayment);
-          setCards(data.map(item => item[1].free).length)
+          setCards(data.map(item => item[1].freeAboutDay).length)
           setPayments(totalPayment)
           setClients(base)
           setAllCards(Object.values(res.data).length)
@@ -104,7 +103,7 @@ const Free = () => {
       <div className={c.clients}>
         <div className={c.up}>
           <div className={c.left}>
-            <h2>Оплата за 12 месяцев</h2>
+            <h2>Оплата за 12 месяцев | Через день</h2>
             <p>{month}</p> 
           </div>
           <div className={c.right}>
@@ -129,22 +128,9 @@ const Free = () => {
             <th>
               <div>
                 Остаток
-                <div className={c.btns}>
-                  <button 
-                    onClick={() => setHour('До')}
-                    className={hour === 'До' ? c.active : ''}
-                  >
-                    До 14:00
-                  </button>
-                  <button 
-                    onClick={() => setHour('После')}
-                    className={hour === 'После' ? c.active : ''}
-                  >
-                    После 14:00
-                  </button>
-                </div>
               </div>
-            </th>          </tr>
+            </th>          
+          </tr>
           {
             searchUser?.length > 0 ?
             searchUser?.map((item, i) => (
@@ -152,10 +138,18 @@ const Free = () => {
                 <td>{item.id}</td>
                 <td>{item[1]?.name}</td>
                 <td>{item[1]?.payment}</td>
-                <td>
+                <td className={c.edit}>
                   <p className={c.count}>
                     Сентябрь 2024 - Сентябрь 2025
                   </p>
+                  <li
+                    onClick={() => {
+                      setUser(item)
+                      setActive(true)
+                    }}
+                  >
+                    <img src={Icons.edit} alt="" />
+                  </li>
                 </td>
               </tr> 
             )) :
@@ -169,9 +163,9 @@ const Free = () => {
       </div>
 
       {active ? <Components.Edit user={user} setActive={setActive} setDep={setDep}/> : ""}
-      {addActive ? <Components.Add clients={clients} typeOfGym={"free"} setAddActive={setAddActive}/> : ""}
+      {addActive ? <Components.Add clients={clients} typeOfGym={"freeDayAbout"} setAddActive={setAddActive}/> : ""}
     </div>
   )
 }
 
-export default Free
+export default FreeDayAbout

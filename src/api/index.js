@@ -7,7 +7,8 @@ export const API = {
   deleteClient: (id) => axios.delete(`/clients/${id}/.json`),
   addGym: (data) => axios.post('/gym.json/', data),
   postReport: (month, data) => axios.put(`/report/${month}.json`, data),
-  postExpenses: (month, data) => axios.post(`/expenses/${month}.json`, data),
-  getExpenses: (month, data) => axios.get(`/expenses/${month}.json`, data),
+  postExpenses: (month, day, data) => axios.post(`/expenses/${month}/${day}.json`, data),
+  getExpensesByDay: (month, day) => axios.get(`/expenses/${month}/${day}.json`),
+  getExpenses: (month) => axios.get(`/expenses/${month}.json`),
   getReport: () => axios.get('/report.json')
 }

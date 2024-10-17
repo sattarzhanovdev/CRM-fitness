@@ -195,6 +195,15 @@
             align-items: center;
             justify-content: center;
           }
+          &.edit{
+            display: flex;
+            align-items: center;
+            li{
+              list-style: none;
+              margin-left: 24px;
+              cursor: pointer;
+            }
+          }
           div{
             width: 100%;
             display: flex;

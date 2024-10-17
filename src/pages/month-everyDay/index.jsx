@@ -168,7 +168,7 @@ const MonthEveryDay = () => {
                 <td className={item[1].freeze ? c.freeze : ''}>
                   <div>
                     {
-                      item[1]?.sessions?.map((value, j) => (
+                      item[1]?.sessions.slice(0, 12)?.map((value, j) => (
                         <button 
                           key={j}
                           className={item[1]?.attended && item[1]?.attended[j]?.type === 'checked'  ? c.active : item[1]?.attended[j]?.type === 'freezed' ? c.frozen : '' }

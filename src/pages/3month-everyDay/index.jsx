@@ -127,25 +127,7 @@ const Month3EveryDay = () => {
             <th className={c.name}>ФИО клиента</th>
             <th>Оплата</th>
             <th>Остаток</th>
-            <th>
-              <div>
-                Занятия
-                <div className={c.btns}>
-                  <button 
-                    onClick={() => setHour('До')}
-                    className={hour === 'До' ? c.active : ''}
-                  >
-                    До 14:00
-                  </button>
-                  <button 
-                    onClick={() => setHour('После')}
-                    className={hour === 'После' ? c.active : ''}
-                  >
-                    После 14:00
-                  </button>
-                </div>
-              </div>
-            </th>
+
 
               
           </tr>
@@ -168,7 +150,7 @@ const Month3EveryDay = () => {
                 <td className={item[1].freeze ? c.freeze : ''}>
                   <div>
                     {
-                      item[1]?.sessions?.map((value, j) => (
+                      item[1]?.sessions.slice(0, 12)?.map((value, j) => (
                         <button 
                           key={j}
                           className={item[1]?.attended && item[1]?.attended[j]?.type === 'checked'  ? c.active : item[1]?.attended[j]?.type === 'freezed' ? c.frozen : '' }
@@ -199,7 +181,7 @@ const Month3EveryDay = () => {
       </div>
 
       {active ? <Components.Edit user={user} setActive={setActive} setDep={setDep}/> : ""}
-      {addActive ? <Components.Add clients={clients} typeOfGym={"aboutDay3"} setAddActive={setAddActive}/> : ""}
+      {addActive ? <Components.Add clients={clients} typeOfGym={"everyDay3"} setAddActive={setAddActive}/> : ""}
     </div>
   )
 }

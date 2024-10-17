@@ -4,12 +4,16 @@ import { Icons } from '../../assets/icons'
 import { Months } from '../../utils'
 import { API } from '../../api'
 import ReportMore from '../../components/reportMode'
+import { Components } from '../../components'
 
 const Report = () => {
   const month = localStorage.getItem('month')
   const [ benefit, setBenefit ] = React.useState(0)
   const [ expenses, setExpenses ] = React.useState(0)
+  const [ expensesData, setExpensesData ] = React.useState(null)
+  const [ expensesDataMore, setExpensesDataMore ] = React.useState(null)
   const [ turnover, setTurnover ] = React.useState(0)
+  const [ dateMore, setDateMore ] = React.useState('')
   
   const [ benefits, setBenefits ] = React.useState({
     aboutDay: 0,
@@ -28,10 +32,13 @@ const Report = () => {
     freeCards: 0,
   })
 
+
   const [ monthRep, setMonthRep ] = React.useState(Months.find(item => item.name === month).id)
   const [ rep, setRep ] = React.useState(1)
 
   const [ active, setActive ] = React.useState(false)
+  const [ activeExpenses, setActiveExpenses ] = React.useState(false)
+  const [ activeExpensesMore, setActiveExpensesMore ] = React.useState(false)
 
   const [ period, setPeriod ] = React.useState('')
 
@@ -75,7 +82,31 @@ const Report = () => {
 
         setTurnover(base.length)
       })
-  }, [])
+
+    API.getExpenses(Months.find(item => item.id === monthRep).eng)
+      .then(res => {
+        if(res.data){
+          const result = Object.entries(res.data).map(item => {
+            return {
+              ...item
+            }
+          })
+          const totalSumma = result.reduce((sum, obj) => {
+            return sum + Object.values(obj["1"]).reduce((subSum, item) => subSum + item.summa, 0);
+          }, 0);
+          setExpenses(totalSumma);
+          
+          setExpensesData(result);
+        }else{
+          setExpensesData([]);
+        }
+      })
+  }, [monthRep])
+
+  const date = new Date()
+  const handleAddExpenses = () => {
+    setActiveExpenses(true)
+  }
   
   return (
     <div className={c.container}>
@@ -435,35 +466,58 @@ const Report = () => {
           rep === 4 ?
           <table>
             <tr>
-              <th>Тип абонемента</th>
-              <th className={c.name}>Полученный доход</th>
+              <th>Дата</th>
+              <th className={c.name}>Расход</th>
               <th>Дополнительно</th>
             </tr>
 
-            <tr>
-              <td>
-                1 месяц/через день
-              </td>
-              <td>
-                <span className={c.summa}>
-                  190.000c
-                </span>
-              </td>
-              <td>
-                <span className={c.cards}>
-                  120
-                </span>
-              </td>
-              <td>
-                Посмотреть полный отчет
-              </td>
-            </tr>
+            {
+              expensesData?.length !== 0 ?
+              expensesData?.map((item, key) => (
+                <tr key={key}>
+                  <td>
+                    {item[0]} {Months.find(item => item.id === monthRep).name}
+                  </td>
+                  <td>
+                    <span className={c.summa}>
+                      {Object.values(item[1]).reduce((a, b) => a+b.summa, 0)} с
+                    </span>
+                  </td>
+                  <td 
+                    className={c.view} 
+                    onClick={() => {
+                      setExpensesDataMore(Object.values(item[1]))
+                      setDateMore(`${item[0]} ${Months.find(item => item.id === monthRep).name}`)
+                      setActiveExpensesMore(true)
+                    }}
+                  >
+                    Посмотреть полный отчет
+                  </td>
+                  <td className={c.add}>
+                    {
+                      Number(item[0]) === date.getDate() ?
+                      <button onClick={() => handleAddExpenses()}>
+                        Добавить
+                      </button> :
+                      ''
+                    }
+                  </td>
+                </tr>
+              )) :
+              <tr>
+                <td>
+                  Нету расходов
+                </td>
+             </tr>
+            }
           </table> :
           ''
         }
       </div>
 
       {active ? <ReportMore period={period} item={null} setActive={setActive} /> : null}
+      {activeExpenses ? <Components.AddExpenses setActive={setActiveExpenses} /> : null}
+      {activeExpensesMore ? <Components.Expenses date={dateMore} item={expensesDataMore} setActive={setActiveExpensesMore} /> : null}
     </div>
   )
 }
