@@ -10,7 +10,17 @@ const Edit = ({ user, setActive, setDep }) => {
   const handleDelete = () => {
     API.deleteClient(user[0])
       .then(() => window.location.reload())
-    
+  }
+
+  const date = new Date()
+
+  const handleExtend = () => {
+    if(user[1].attended.length === user[1].sessions.length){
+      API.putClient(user[0], {...user[1], attended: "", day: date.getDate(), month: date.getMonth(), year: date.getFullYear()})
+        .then(() => window.location.reload())
+    }else{
+      alert('Еще есть дни!')
+    }
   }
 
   return (
@@ -67,9 +77,7 @@ const Edit = ({ user, setActive, setDep }) => {
                           className={c.check}
                           onClick={() => {
                             checkAttendens(user[0], user[1]?.attended, user, setDep, 'checked');
-                            setTimeout(() => {
-                              window.location.reload();
-                            }, 1000);
+                            setActive(false)
                           }}
                         >
                           Отметить
@@ -115,6 +123,7 @@ const Edit = ({ user, setActive, setDep }) => {
           <button>Сохранить</button>
           <button onClick={() => handleDelete()}>Удалить</button>
           <button onClick={() => setFreeze(!freeze)}>{freeze ? 'Отменить' : 'Режим заморозки'}</button>
+          <button onClick={() => handleExtend()}>Продлить</button>
         </div>
       </div>
     </div>

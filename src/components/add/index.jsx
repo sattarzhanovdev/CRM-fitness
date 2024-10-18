@@ -42,6 +42,7 @@ const Add = ({clients, typeOfGym, setAddActive}) => {
       "freeEveryDay": typeOfGym === 'freeEveryDay',
       "freeAboutDay": typeOfGym === 'freeDayAbout',
       "everyDay3": typeOfGym === 'everyDay3',
+      "gym": typeOfGym === 'gym',
       "once": typeOfGym === 'once',
       "month": date.getMonth() + 1,
       "day": date.getDay(),
@@ -166,6 +167,15 @@ const Add = ({clients, typeOfGym, setAddActive}) => {
                   onClick={() => setPay(33000)}
                 >
                   33000
+                </span>
+              </ul> :
+              typeOfGym === 'once' ?
+              <ul>
+                <span 
+                  className={pay === 400 ? c.active : ''}
+                  onClick={() => setPay(400)}
+                >
+                  400
                 </span>
               </ul> : ''
             }

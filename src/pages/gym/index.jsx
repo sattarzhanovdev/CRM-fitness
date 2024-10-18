@@ -27,16 +27,16 @@ const Gym = () => {
               id: id+1,
               ...item
             }
-          }).filter(item => item[1].aboutDay && item[1].type === hour)
+          }).filter(item => item[1].gym)
           const data = Object.entries(res.data).map((item, id) => {
             return {
               id: id+1,
               ...item
             }
-          }).filter(item => item[1].aboutDay)
+          }).filter(item => item[1].gym)
           const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
           console.log(totalPayment);
-          setCards(data.map(item => item[1].aboutDay).length)
+          setCards(data.map(item => item[1].gym).length)
           setPayments(totalPayment)
           setClients(base)
           setAllCards(Object.values(res.data).length)
@@ -166,7 +166,7 @@ const Gym = () => {
       </div>
 
       {active ? <Components.Edit user={user} setActive={setActive} setDep={setDep}/> : ""}
-      {addActive ? <Components.Add clients={clients} setAddActive={setAddActive}/> : ""}
+      {addActive ? <Components.Add clients={clients} typeOfGym={"gym"} setAddActive={setAddActive}/> : ""}
     </div>
   )
 }

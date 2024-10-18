@@ -1,6 +1,7 @@
 import React from 'react'
 import c from './reportMode.module.scss'
 import { Icons } from '../../assets/icons'
+import { API } from '../../api'
 
 const ReportMore = ({period, item, setActive}) => {
   const [ report, setReport ] = React.useState({
@@ -12,6 +13,42 @@ const ReportMore = ({period, item, setActive}) => {
     beforeMore: 0,
     afterMore: 0
   })
+
+  React.useEffect(() => {
+    API.getClients()
+      .then(res => {
+        const result = Object.entries(res.data).map(item => {
+          return {
+            ...item
+          }
+        }).filter(item => {
+          if(period === '1 месяц/через день'){
+            return item[1].aboutDay
+          }else if(period === '1 месяц/каждый день'){
+            return item[1].everyDay
+          }else if(period === '3 месяца/через день'){
+            return item[1].aboutDay3
+          }else if(period === '3 месяца/каждый день'){
+            return item[1].everyDay3
+          }else if(period === 'Единоразовые занятия'){
+            return item[1].once
+          }else if(period === 'Спортзал'){
+            return item[1].gym
+          }
+        })
+        
+        setReport({
+          before: result.filter(item => item[1].type === "До").length,
+          after: result.filter(item => item[1].type === "После").length,
+          cards: result.length,
+          closed: 0,
+          skips: 0,
+          beforeMore: `${result.filter(item => item[1].type === "До").length } * ${result.length > 0 ? result[0][1].payment : 0} = ${result.filter(item => item[1].type === "До").length * result.length > 0 ? result[0][1].payment : 0}`,
+          afterMore: `${result.filter(item => item[1].type === "После").length} * ${result.length > 0 ? result[0][1].payment : 0} = ${result.filter(item => item[1].type === "После").length * result.length > 0 ? result[0][1].payment : 0}`
+        })
+        
+    });
+  }, [])
 
   return (
     <div className={c.container}>

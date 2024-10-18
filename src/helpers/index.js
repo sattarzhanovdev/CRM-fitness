@@ -11,7 +11,6 @@ export const checkAttendens = (id, value, user, setDep, type) => {
       })
   }else{
     const data = [{num: 1, time: `${date.getDate()} ${month}/${date.getHours()}:${date.getMinutes()}`, type: type}]
-    console.log(data); 
     API.addAttended(id, data)
       .then(() => {
         setDep(Math.random())

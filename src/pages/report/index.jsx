@@ -51,7 +51,7 @@ const Report = () => {
               id: id+1, 
               ...item
             }
-          })
+          }).filter(item => item[1].month === monthRep)
   
           const baseAboutDay = base?.filter(item => item[1].aboutDay)
           const baseAboutDay3 = base?.filter(item => item[1].aboutDay3)
@@ -243,7 +243,7 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 cентября - 1 октября
+                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
                 </span>
               </td>
               <td
@@ -273,7 +273,7 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 cентября - 1 октября
+                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
                 </span>
               </td>
               <td
@@ -303,7 +303,7 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 cентября - 1 октября
+                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
                 </span>
               </td>
               <td
@@ -333,7 +333,7 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 cентября - 1 октября
+                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
                 </span>
               </td>
               <td
@@ -363,7 +363,7 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 cентября - 1 октября
+                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
                 </span>
               </td>
               <td
@@ -393,7 +393,7 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 cентября - 1 октября
+                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
                 </span>
               </td>
               <td
@@ -423,7 +423,7 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 cентября - 1 октября
+                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
                 </span>
               </td>
               <td
