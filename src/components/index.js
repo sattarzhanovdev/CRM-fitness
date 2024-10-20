@@ -2,6 +2,7 @@ import Add from "./add";
 import AddExpenses from "./addExpenses";
 import Edit from "./edit";
 import Expenses from "./expenses";
+import Period from "./period";
 import ReportMore from "./reportMode";
 import Sidebar from "./sidebar";
 
@@ -11,5 +12,6 @@ export const Components = {
   Edit,
   ReportMore,
   AddExpenses,
-  Expenses
+  Expenses,
+  Period
 }

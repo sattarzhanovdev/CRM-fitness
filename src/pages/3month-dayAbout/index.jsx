@@ -28,6 +28,7 @@ const Month3DayAbout = () => {
               ...item
             }
           }).filter(item => item[1].aboutDay3 && item[1].type === hour)
+          
           const data = Object.entries(res.data).map((item, id) => {
             return {
               id: id+1,

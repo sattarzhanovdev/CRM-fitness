@@ -11,6 +11,7 @@ export const API = {
   postExpenses: (month, day, data) => axios.post(`/expenses/${month}/${day}.json`, data),
   getExpensesByDay: (month, day) => axios.get(`/expenses/${month}/${day}.json`),
   getExpenses: (month) => axios.get(`/expenses/${month}.json`),
+  getAllExpenses: () => axios.get(`/expenses.json`),
   getReport: () => axios.get('/report.json'),
   extend: (id, data) => axios.put(`/clients/${id}.json`, data)
 }

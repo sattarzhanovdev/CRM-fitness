@@ -12,6 +12,7 @@ const Report = () => {
   const [ expenses, setExpenses ] = React.useState(0)
   const [ expensesData, setExpensesData ] = React.useState(null)
   const [ expensesDataMore, setExpensesDataMore ] = React.useState(null)
+  const [ data, setData ] = React.useState(null)
   const [ turnover, setTurnover ] = React.useState(0)
   const [ dateMore, setDateMore ] = React.useState('')
   
@@ -32,7 +33,6 @@ const Report = () => {
     freeCards: 0,
   })
 
-
   const [ monthRep, setMonthRep ] = React.useState(Months.find(item => item.name === month).id)
   const [ rep, setRep ] = React.useState(1)
 
@@ -41,6 +41,32 @@ const Report = () => {
   const [ activeExpensesMore, setActiveExpensesMore ] = React.useState(false)
 
   const [ period, setPeriod ] = React.useState('')
+  const [ activePeriod, setActivePeriod ] = React.useState(false)
+
+  const [startDate, setStartDate] = React.useState('');
+  const [endDate, setEndDate] = React.useState('');
+
+  const [dep, setDep] = React.useState('');
+
+  const convertToDate = (day, month, year) => {
+    return new Date(year, month - 1, day); 
+  };
+
+  const filteredData = data?.filter(item => {
+    const { day, month, year } = item["1"];
+    const itemDate = convertToDate(day, month, year);
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+
+    return (!start || itemDate >= start) && (!end || itemDate <= end);
+  });
+
+
+  const monthMap = {
+    "January": 1, "February": 2, "March": 3, "April": 4, "May": 5,
+    "June": 6, "July": 7, "August": 8, "September": 9, "October": 10,
+    "November": 11, "December": 12
+  };
 
   React.useEffect(() => {
     API.getClients()
@@ -52,16 +78,17 @@ const Report = () => {
               ...item
             }
           }).filter(item => item[1].month === monthRep)
+          setData(base)
   
-          const baseAboutDay = base?.filter(item => item[1].aboutDay)
-          const baseAboutDay3 = base?.filter(item => item[1].aboutDay3)
-          const baseEveryDay = base?.filter(item => item[1].everyDay)
-          const baseEveryDay3 = base?.filter(item => item[1].everyDay3)
-          const baseOnce = base?.filter(item => item[1].once)
-          const baseGym = base?.filter(item => item[1].gym)
-          const baseFree = base?.filter(item => item[1].free)
+          const baseAboutDay = filteredData ? filteredData?.filter(item => item[1].aboutDay) : base?.filter(item => item[1].aboutDay)
+          const baseAboutDay3 = filteredData ? filteredData?.filter(item => item[1].aboutDay3) : base?.filter(item => item[1].aboutDay3)
+          const baseEveryDay = filteredData ? filteredData?.filter(item => item[1].everyDay) : base?.filter(item => item[1].everyDay)
+          const baseEveryDay3 = filteredData ? filteredData?.filter(item => item[1].everyDay3) : base?.filter(item => item[1].everyDay3)
+          const baseOnce = filteredData ? filteredData?.filter(item => item[1].once) : base?.filter(item => item[1].once)
+          const baseGym = filteredData ? filteredData?.filter(item => item[1].gym) : base?.filter(item => item[1].gym)
+          const baseFree = filteredData ? filteredData?.filter(item => item[1].free) : base?.filter(item => item[1].free)
   
-          setBenefit(base.reduce((a, b) => a + Number(b[1]?.payment), 0))
+          setBenefit(filteredData ? filteredData.reduce((a, b) => a + Number(b[1]?.payment), 0) : base.reduce((a, b) => a + Number(b[1]?.payment), 0))
           
           setBenefits({
             aboutDay: baseAboutDay.reduce((a, b) => a + Number(b[1]?.payment), 0),
@@ -81,34 +108,94 @@ const Report = () => {
             freeCards: baseFree.length
           })
   
-          setTurnover(base.length)
+          setTurnover(filteredData ? filteredData.length : base.length)
         }
       })
-
-    API.getExpenses(Months.find(item => item.id === monthRep).eng)
-      .then(res => {
-        if(res.data){
-          const result = Object.entries(res.data).map(item => {
-            return {
-              ...item
+    
+      if (startDate.length !== 0) {
+        API.getAllExpenses()
+          .then(res => {
+            if (res.data) {
+              const result = Object.entries(res.data).map(item => {
+                return {
+                  ...item
+                };
+              });
+      
+              let totalSumma = 0;
+      
+              result.forEach(monthObj => {
+                const monthName = monthObj["0"];
+                const monthNumber = monthMap[monthName];  
+      
+                const startYear = Number(startDate.split('-')[0]);  // Извлекаем год из startDate
+                const startMonth = Number(startDate.split('-')[1]); // Извлекаем месяц из startDate
+                const startDay = Number(startDate.split('-')[2]);   // Извлекаем день из startDate
+      
+                const endYear = Number(endDate.split('-')[0]);      // Извлекаем год из endDate
+                const endMonth = Number(endDate.split('-')[1]);     // Извлекаем месяц из endDate
+                const endDay = Number(endDate.split('-')[2]);       // Извлекаем день из endDate
+      
+                // Проверяем, что год и месяц попадают в указанный диапазон
+                if (
+                  (startYear < endYear) || 
+                  (startYear === endYear && monthNumber >= startMonth && monthNumber <= endMonth)
+                ) {
+                  const days = monthObj["1"];
+      
+                  Object.keys(days).forEach(day => {
+                    const dayNumber = parseInt(day);
+      
+                    // Условия для фильтрации по дням и месяцам с учетом года
+                    if (
+                      (monthNumber === startMonth && dayNumber >= startDay) ||
+                      (monthNumber === endMonth && dayNumber <= endDay) ||
+                      (monthNumber > startMonth && monthNumber < endMonth)
+                    ) {
+                      Object.values(days[day]).forEach(transaction => {
+                        totalSumma += transaction.summa || 0;
+                      });
+                    }
+                  });
+                }
+              });
+      
+              setExpenses(totalSumma);
             }
-          })
-          const totalSumma = result.reduce((sum, obj) => {
-            return sum + Object.values(obj["1"]).reduce((subSum, item) => subSum + item.summa, 0);
-          }, 0);
-          setExpenses(totalSumma);
-          
-          setExpensesData(result);
-        }else{
-          setExpensesData([]);
-        }
-      })
-  }, [monthRep])
+          });
+      } else {
+        API.getExpenses(Months.find(item => item.id === monthRep).eng)
+          .then(res => {
+            if (res.data) {
+              const result = Object.entries(res.data).map(item => {
+                return {
+                  ...item
+                };
+              });
+      
+              const totalSumma = result.reduce((sum, obj) => {
+                return sum + Object.values(obj["1"]).reduce((subSum, item) => subSum + item.summa, 0);
+              }, 0);
+      
+              setExpensesData(result);
+              setExpenses(totalSumma);
+      
+            } else {
+              setExpenses(0);
+              setExpensesData([]);
+            }
+          });
+      }
+  }, [monthRep, startDate, endDate, dep])
 
   const date = new Date()
   const handleAddExpenses = () => {
     setActiveExpenses(true)
   }
+
+  const splittedStartDate = startDate.split('-')
+  const splittedEndDate = endDate.split('-')  
+  
   
   return (
     <div className={c.container}>
@@ -152,66 +239,76 @@ const Report = () => {
               }
             </div> :
             <div className={c.period}>
-              <span>12 сентября - 20 сентября</span>
-              <p>Выберите период</p>
+              <span>
+                {
+                startDate ? 
+                `${splittedStartDate[2]} ${Months.find(item => item.id === Number(splittedStartDate[1])).name}` 
+                :
+                `1 ${Months.find(item => item.id == monthRep).name}`} - {
+                  endDate ? 
+                  `${splittedEndDate[2]} ${Months.find(item => item.id === Number(splittedEndDate[1])).name}` :
+                  `1 ${Months.find(item => item.id == monthRep+1).name}`
+                }
+              </span>
+              <p onClick={() => setActivePeriod(true)}>Выберите период</p>
             </div>
           }
         </ul>
         {
           rep === 1 || rep === 2 ?
             <div className={c.tracking}>
-            <div>
-              <di className={c.icon}>
-                <img src={Icons.users} alt=""/>
-              </di>
-              <ul>
-                <li>
-                  Итоги прибыли за {month.toLowerCase()}
-                </li>
-                <h1>{benefit}</h1>
-                <p>
-                  <span>
-                    <img src={Icons.high} alt="" /> 16%
-                  </span>
-                  за этот месяц
-                </p>
-              </ul>
-            </div>
-            <div>
-              <div className={c.icon}>
-                <img src={Icons.profileTick} alt=""/>
+              <div>
+                <di className={c.icon}>
+                  <img src={Icons.users} alt=""/>
+                </di>
+                <ul>
+                  <li>
+                    Итоги прибыли за {Months.find(item => item.id === Number(monthRep)).name.toLowerCase()}
+                  </li>
+                  <h1>{benefit}</h1>
+                  <p>
+                    <span>
+                      <img src={Icons.high} alt="" /> 16%
+                    </span>
+                    за этот месяц
+                  </p>
+                </ul>
               </div>
-              <ul>
-                <li>
-                  Расходы
-                </li>
-                <h1>{expenses}</h1>
-                <p>
-                  <span>
-                    <img src={Icons.low} alt="" /> 1%
-                  </span>
-                  за этот месяц
-                </p>
-              </ul>
-            </div>
-            <div>
-              <div className={c.icon}>
-                <img src={Icons.monitor} alt=""/>
+              <div>
+                <div className={c.icon}>
+                  <img src={Icons.profileTick} alt=""/>
+                </div>
+                <ul>
+                  <li>
+                    Расходы
+                  </li>
+                  <h1>{expenses}</h1>
+                  <p>
+                    <span>
+                      <img src={Icons.low} alt="" /> 1%
+                    </span>
+                    за этот месяц
+                  </p>
+                </ul>
               </div>
-              <ul>
-                <li>
-                  Активные карты в обороте 
-                </li>
-                <h1>{turnover}</h1>
-                <p>
-                  <span>
-                    <img src={Icons.low} alt="" /> 1%
-                  </span>
-                  за этот месяц
-                </p>
-              </ul>
-            </div>
-          </div> :
+              <div>
+                <div className={c.icon}>
+                  <img src={Icons.monitor} alt=""/>
+                </div>
+                <ul>
+                  <li>
+                    Активные карты в обороте 
+                  </li>
+                  <h1>{turnover}</h1>
+                  <p>
+                    <span>
+                      <img src={Icons.low} alt="" /> 1%
+                    </span>
+                    за этот месяц
+                  </p>
+                </ul>
+              </div>
+            </div> :
           null
         }
       </div>
@@ -233,7 +330,7 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.summa}>
-                  {benefits.aboutDay}c
+                  {benefits.aboutDay} c
                 </span>
               </td>
               <td>
@@ -243,7 +340,13 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
+                  {
+                    rep === 2 && startDate && endDate ?
+                    `${splittedStartDate[2]} ${Months.find(item => item.id === Number(splittedStartDate[1])).name} - ${splittedEndDate[2]} ${Months.find(item => item.id === Number(splittedEndDate[1])).name}` 
+                    :
+                    `1 ${Months.find(item => item.id === monthRep).name.toLowerCase()} - 1 ${Months.find(item => item.id === monthRep+1).name.toLowerCase()}`
+                  }
+                  
                 </span>
               </td>
               <td
@@ -273,7 +376,12 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
+                  {
+                    rep === 2 && startDate && endDate ?
+                    `${splittedStartDate[2]} ${Months.find(item => item.id === Number(splittedStartDate[1])).name} - ${splittedEndDate[2]} ${Months.find(item => item.id === Number(splittedEndDate[1])).name}` 
+                    :
+                    `1 ${Months.find(item => item.id === monthRep).name.toLowerCase()} - 1 ${Months.find(item => item.id === monthRep+1).name.toLowerCase()}`
+                  }
                 </span>
               </td>
               <td
@@ -303,7 +411,12 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
+                  {
+                    rep === 2 && startDate && endDate ?
+                    `${splittedStartDate[2]} ${Months.find(item => item.id === Number(splittedStartDate[1])).name} - ${splittedEndDate[2]} ${Months.find(item => item.id === Number(splittedEndDate[1])).name}` 
+                    :
+                    `1 ${Months.find(item => item.id === monthRep).name.toLowerCase()} - 1 ${Months.find(item => item.id === monthRep+1).name.toLowerCase()}`
+                  }
                 </span>
               </td>
               <td
@@ -333,8 +446,12 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
-                </span>
+                  {
+                    rep === 2 && startDate && endDate ?
+                    `${splittedStartDate[2]} ${Months.find(item => item.id === Number(splittedStartDate[1])).name} - ${splittedEndDate[2]} ${Months.find(item => item.id === Number(splittedEndDate[1])).name}` 
+                    :
+                    `1 ${Months.find(item => item.id === monthRep).name.toLowerCase()} - 1 ${Months.find(item => item.id === monthRep+1).name.toLowerCase()}`
+                  }                </span>
               </td>
               <td
                 className={c.view}
@@ -363,7 +480,12 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
+                  {
+                    rep === 2 && startDate && endDate ?
+                    `${splittedStartDate[2]} ${Months.find(item => item.id === Number(splittedStartDate[1])).name} - ${splittedEndDate[2]} ${Months.find(item => item.id === Number(splittedEndDate[1])).name}` 
+                    :
+                    `1 ${Months.find(item => item.id === monthRep).name.toLowerCase()} - 1 ${Months.find(item => item.id === monthRep+1).name.toLowerCase()}`
+                  }
                 </span>
               </td>
               <td
@@ -393,7 +515,12 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
+                  {
+                    rep === 2 && startDate && endDate ?
+                    `${splittedStartDate[2]} ${Months.find(item => item.id === Number(splittedStartDate[1])).name} - ${splittedEndDate[2]} ${Months.find(item => item.id === Number(splittedEndDate[1])).name}` 
+                    :
+                    `1 ${Months.find(item => item.id === monthRep).name.toLowerCase()} - 1 ${Months.find(item => item.id === monthRep+1).name.toLowerCase()}`
+                  }
                 </span>
               </td>
               <td
@@ -423,7 +550,12 @@ const Report = () => {
               </td>
               <td>
                 <span className={c.period}>
-                  1 {Months.find(item => item.id === monthRep-1).name.toLowerCase()} - 1 {Months.find(item => item.id === monthRep).name.toLowerCase()}
+                  {
+                    rep === 2 && startDate && endDate ?
+                    `${splittedStartDate[2]} ${Months.find(item => item.id === Number(splittedStartDate[1])).name} - ${splittedEndDate[2]} ${Months.find(item => item.id === Number(splittedEndDate[1])).name}` 
+                    :
+                    `1 ${Months.find(item => item.id === monthRep).name.toLowerCase()} - 1 ${Months.find(item => item.id === monthRep+1).name.toLowerCase()}`
+                  }
                 </span>
               </td>
               <td
@@ -448,7 +580,7 @@ const Report = () => {
 
             <tr>
               <td>
-                1 месяц/через день
+                1 сентября
               </td>
               <td>
                 <span className={c.summa}>
@@ -520,6 +652,7 @@ const Report = () => {
       {active ? <ReportMore period={period} item={null} setActive={setActive} /> : null}
       {activeExpenses ? <Components.AddExpenses setActive={setActiveExpenses} /> : null}
       {activeExpensesMore ? <Components.Expenses date={dateMore} item={expensesDataMore} setActive={setActiveExpensesMore} /> : null}
+      {activePeriod ? <Components.Period setActive={setActivePeriod} setStartDate={setStartDate} setEndDate={setEndDate} setDep={setDep}/> : null}
     </div>
   )
 }

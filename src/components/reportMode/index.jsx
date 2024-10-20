@@ -36,17 +36,23 @@ const ReportMore = ({period, item, setActive}) => {
             return item[1].gym
           }
         })
+
+        const closedArr = []
+        const sessionsArr = []
+        result.filter(item => closedArr.push(item[1].attended))
+        result.filter(item => sessionsArr.push(item[1].sessions))
+        const closedData = closedArr.map(item => item.length).reduce((a,b) => a+b, 0)
+        const sessionsData = sessionsArr.map(item => item.length).reduce((a,b) => a+b, 0)
         
         setReport({
           before: result.filter(item => item[1].type === "До").length,
           after: result.filter(item => item[1].type === "После").length,
           cards: result.length,
-          closed: 0,
-          skips: 0,
+          closed: closedData,
+          skips: sessionsData-closedData,
           beforeMore: `${result.filter(item => item[1].type === "До").length } * ${result.length > 0 ? result[0][1].payment : 0} = ${result.filter(item => item[1].type === "До").length * result.length > 0 ? result[0][1].payment : 0}`,
           afterMore: `${result.filter(item => item[1].type === "После").length} * ${result.length > 0 ? result[0][1].payment : 0} = ${result.filter(item => item[1].type === "После").length * result.length > 0 ? result[0][1].payment : 0}`
-        })
-        
+        })        
     });
   }, [])
 

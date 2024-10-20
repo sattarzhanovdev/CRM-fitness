@@ -35,7 +35,6 @@ const MonthDayAbout = () => {
             }
           }).filter(item => item[1].aboutDay)
           const totalPayment = data.reduce((a, b) => a + Number(b[1]?.payment), 0)
-          console.log(totalPayment);
           setCards(data.map(item => item[1].aboutDay).length)
           setPayments(totalPayment)
           setClients(base)
