@@ -4,6 +4,7 @@ import { Icons } from '../../assets/icons'
 import { useForm } from 'react-hook-form'
 import { IMaskInput } from "react-imask";
 import { API } from '../../api';
+import { Months } from '../../utils';
 
 const Add = ({clients, typeOfGym, setAddActive}) => {
   const [ phone, setPhone ] = React.useState('')
@@ -18,7 +19,6 @@ const Add = ({clients, typeOfGym, setAddActive}) => {
 
   const date = new Date()
 
-  
   const addClient = (value) => {
     const arr = []
   
@@ -54,6 +54,9 @@ const Add = ({clients, typeOfGym, setAddActive}) => {
         setAddActive(false)
         window.location.reload()
       })
+
+    API.postBenefit(Months.find(item => item.id === date.getMonth() + 1).eng, date.getDate(), {summa: pay, cards: 1})
+    
     setPhone('')
     reset()
   }
@@ -70,6 +73,7 @@ const Add = ({clients, typeOfGym, setAddActive}) => {
         setClientsId(data?.length >= 0 ? data[data?.length - 1]?.id + 1 : 1);
       })
   }, [])
+
 
   return (
     <div className={c.container}>

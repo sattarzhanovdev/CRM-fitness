@@ -13,5 +13,7 @@ export const API = {
   getExpenses: (month) => axios.get(`/expenses/${month}.json`),
   getAllExpenses: () => axios.get(`/expenses.json`),
   getReport: () => axios.get('/report.json'),
-  extend: (id, data) => axios.put(`/clients/${id}.json`, data)
+  extend: (id, data) => axios.put(`/clients/${id}.json`, data),
+  postBenefit: (month, day, data) => axios.post(`/benefits/${month}/${day}.json`, data),
+  getBenefit: (month) => axios.get(`/benefits/${month}.json`)
 }

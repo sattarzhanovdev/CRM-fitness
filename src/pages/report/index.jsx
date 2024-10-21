@@ -33,6 +33,8 @@ const Report = () => {
     freeCards: 0,
   })
 
+  const [ dayProfit, setDayProfit ] = React.useState(null)
+
   const [ monthRep, setMonthRep ] = React.useState(Months.find(item => item.name === month).id)
   const [ rep, setRep ] = React.useState(1)
 
@@ -112,80 +114,95 @@ const Report = () => {
         }
       })
     
-      if (startDate.length !== 0) {
-        API.getAllExpenses()
-          .then(res => {
-            if (res.data) {
-              const result = Object.entries(res.data).map(item => {
-                return {
-                  ...item
-                };
-              });
-      
-              let totalSumma = 0;
-      
-              result.forEach(monthObj => {
-                const monthName = monthObj["0"];
-                const monthNumber = monthMap[monthName];  
-      
-                const startYear = Number(startDate.split('-')[0]);  // Извлекаем год из startDate
-                const startMonth = Number(startDate.split('-')[1]); // Извлекаем месяц из startDate
-                const startDay = Number(startDate.split('-')[2]);   // Извлекаем день из startDate
-      
-                const endYear = Number(endDate.split('-')[0]);      // Извлекаем год из endDate
-                const endMonth = Number(endDate.split('-')[1]);     // Извлекаем месяц из endDate
-                const endDay = Number(endDate.split('-')[2]);       // Извлекаем день из endDate
-      
-                // Проверяем, что год и месяц попадают в указанный диапазон
-                if (
-                  (startYear < endYear) || 
-                  (startYear === endYear && monthNumber >= startMonth && monthNumber <= endMonth)
-                ) {
-                  const days = monthObj["1"];
-      
-                  Object.keys(days).forEach(day => {
-                    const dayNumber = parseInt(day);
-      
-                    // Условия для фильтрации по дням и месяцам с учетом года
-                    if (
-                      (monthNumber === startMonth && dayNumber >= startDay) ||
-                      (monthNumber === endMonth && dayNumber <= endDay) ||
-                      (monthNumber > startMonth && monthNumber < endMonth)
-                    ) {
-                      Object.values(days[day]).forEach(transaction => {
-                        totalSumma += transaction.summa || 0;
-                      });
+    if (startDate.length !== 0 && endDate.length !== 0) {
+      API.getAllExpenses()
+        .then(res => {
+          if (res.data) {
+            const result = Object.entries(res.data).map(item => {
+              return {
+                ...item
+              };
+            });
+    
+            const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
+            const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
+    
+            result.forEach(monthObj => {
+              const monthName = monthObj["0"];
+              const monthNumber = monthMap[monthName]; // Преобразование названия месяца в номер
+    
+              if (
+                (startYear === endYear && monthNumber >= startMonth && monthNumber <= endMonth) // Оба года одинаковы, но проверяются месяцы
+              ) {
+                const days = monthObj["1"];
+    
+                Object.keys(days).forEach(day => {
+                  const dayNumber = parseInt(day); // Преобразование дня в число
+    
+                  if (
+                    (monthNumber >= startMonth && dayNumber >= startDay) || // В пределах начального месяца
+                    (monthNumber <= endMonth && dayNumber <= endDay) // В пределах конечного месяца
+                    (monthNumber > startMonth && monthNumber < endMonth) // Между начальным и конечным месяцами
+                  ) {
+                    // Суммирование всех транзакций за указанный день
+                    const monthExp = [];
+                    for (let i = startDay; i <= endDay; i++) {
+                      if (days[i] !== undefined) {
+                        monthExp.push(days[i]);
+                      }
                     }
-                  });
-                }
-              });
-      
-              setExpenses(totalSumma);
+
+                    // Используем map для создания нового массива
+                    const database = monthExp.map(item => {
+                      return Object.values(item);
+                    });
+
+                    const totalSum = database.reduce((acc, group) => {
+                      const groupSum = group.reduce((sum, item) => sum + item.summa, 0);
+                      return acc + groupSum;
+                    }, 0);
+                    
+                    setExpenses(totalSum);
+                  }
+                });
+              }
+            });
+          }
+        });
+    } else {
+      API.getExpenses(Months.find(item => item.id === monthRep).eng)
+        .then(res => {
+          if (res.data) {
+            const result = Object.entries(res.data).map(item => {
+              return {
+                ...item
+              };
+            });
+    
+            const totalSumma = result.reduce((sum, obj) => {
+              return sum + Object.values(obj["1"]).reduce((subSum, item) => subSum + item.summa, 0);
+            }, 0);
+    
+            setExpensesData(result); // Установка данных о расходах
+            setExpenses(totalSumma); // Установка итоговой суммы
+          }
+        });
+    }
+
+    API.getBenefit(Months.find(item => item.id === monthRep).eng)
+      .then(res => {
+        if(res.data){
+          const result = Object.entries(res.data).map((item, id) => {
+            return {
+              id, 
+              ...item
             }
-          });
-      } else {
-        API.getExpenses(Months.find(item => item.id === monthRep).eng)
-          .then(res => {
-            if (res.data) {
-              const result = Object.entries(res.data).map(item => {
-                return {
-                  ...item
-                };
-              });
-      
-              const totalSumma = result.reduce((sum, obj) => {
-                return sum + Object.values(obj["1"]).reduce((subSum, item) => subSum + item.summa, 0);
-              }, 0);
-      
-              setExpensesData(result);
-              setExpenses(totalSumma);
-      
-            } else {
-              setExpenses(0);
-              setExpensesData([]);
-            }
-          });
-      }
+          })
+          setDayProfit(result);
+        }else{
+          setDayProfit([]);
+        }
+      })
   }, [monthRep, startDate, endDate, dep])
 
   const date = new Date()
@@ -195,7 +212,6 @@ const Report = () => {
 
   const splittedStartDate = startDate.split('-')
   const splittedEndDate = endDate.split('-')  
-  
   
   return (
     <div className={c.container}>
@@ -578,24 +594,40 @@ const Report = () => {
               <th>Дополнительно</th>
             </tr>
 
-            <tr>
-              <td>
-                1 сентября
-              </td>
-              <td>
-                <span className={c.summa}>
-                  190.000c
-                </span>
-              </td>
-              <td>
-                <span className={c.cards}>
-                  120
-                </span>
-              </td>
-              <td>
-                Посмотреть полный отчет
-              </td>
-            </tr>
+            {
+              dayProfit ?
+              dayProfit?.map(item => (
+                <tr>
+                  <td>
+                    {item[0]} {Months.find(item => item.id === monthRep).name}
+                  </td>
+                  <td>
+                    <span className={c.summa}>
+                      {Object.values(item[1]).reduce((a,b) => a+b.summa, 0)} c
+                    </span>
+                  </td>
+                  <td>
+                    <span className={c.cards}>
+                      {Object.values(item[1]).reduce((a,b) => a+b.cards, 0)}
+                    </span>
+                  </td>
+                  <td>
+                    Посмотреть полный отчет
+                  </td>
+                </tr>
+              )) :
+              <tr>
+                <td>
+                  Нету дохода
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+              </tr>
+            }
           </table> :
           rep === 4 ?
           <table>

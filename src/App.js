@@ -5,6 +5,8 @@ import './App.scss'
 import { Months } from './utils'
 import axios from 'axios'
 import { API } from './api'
+import Month3DayAbout from './pages/3month-dayAbout'
+import { type } from '@testing-library/user-event/dist/type'
 
 axios.defaults.baseURL = 'https://crm-system-e5257-default-rtdb.asia-southeast1.firebasedatabase.app'
 
@@ -33,11 +35,19 @@ function App() {
       
       API.postReport(Months.find(item => item.id === Number(lastMonth))?.eng, data)
       API.postExpenses(Months.find(item => item.id === Number(lastMonth))?.eng, date.getDate(), {})
-
     }else{
       // API.getReport()
       //   .then(res => res.data())
+
     }
+    API.getBenefit(Months.find(item => item.id === newMonthID).eng)
+      .then(res => {
+        if(res.data){
+        }else{
+          API.postBenefit(Months.find(item => item.id === newMonthID).eng, date.getDate(), {summa: 0, cards: 0})
+        }
+        
+      })
     API.getExpensesByDay(Months.find(item => item.name === month)?.eng, date.getDate())
       .then(res => {
         if(res.data === null){
