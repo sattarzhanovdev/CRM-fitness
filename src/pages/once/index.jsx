@@ -25,7 +25,7 @@ const Once = () => {
               id: id+1,
               ...item
             }
-          }).filter(item => item[1].once && item[1].type === hour)
+          }).filter(item => item[1].once)
           const data = Object.entries(res.data).map((item, id) => {
             return {
               id: id+1,
@@ -111,6 +111,18 @@ const Once = () => {
                       12
                     }
                   </p>
+                </td>
+                <td>
+                  <div>
+                    <li
+                      onClick={() => {
+                        setUser(item)
+                        setActive(true)
+                      }}
+                    >
+                      <img src={Icons.edit} alt="" />
+                    </li>
+                  </div>
                 </td>
               </tr> 
             )) :

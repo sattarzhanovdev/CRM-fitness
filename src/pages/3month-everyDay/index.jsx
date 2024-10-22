@@ -27,7 +27,7 @@ const Month3EveryDay = () => {
               id: id+1,
               ...item
             }
-          }).filter(item => item[1].everyDay3 && item[1].type === hour)
+          }).filter(item => item[1].everyDay3)
           const data = Object.entries(res.data).map((item, id) => {
             return {
               id: id+1,

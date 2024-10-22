@@ -63,7 +63,6 @@ const Report = () => {
     return (!start || itemDate >= start) && (!end || itemDate <= end);
   });
 
-
   const monthMap = {
     "January": 1, "February": 2, "March": 3, "April": 4, "May": 5,
     "June": 6, "July": 7, "August": 8, "September": 9, "October": 10,
@@ -71,6 +70,11 @@ const Report = () => {
   };
 
   React.useEffect(() => {
+    if(rep === 1){
+      setStartDate('')
+      setEndDate('')
+    }
+
     API.getClients()
       .then(res => {
         if(res.data){
@@ -157,6 +161,9 @@ const Report = () => {
                       return Object.values(item);
                     });
 
+                    console.log();
+                    
+
                     const totalSum = database.reduce((acc, group) => {
                       const groupSum = group.reduce((sum, item) => sum + item.summa, 0);
                       return acc + groupSum;
@@ -203,7 +210,7 @@ const Report = () => {
           setDayProfit([]);
         }
       })
-  }, [monthRep, startDate, endDate, dep])
+  }, [monthRep, startDate, endDate, dep, rep])
 
   const date = new Date()
   const handleAddExpenses = () => {
@@ -681,7 +688,7 @@ const Report = () => {
         }
       </div>
 
-      {active ? <ReportMore period={period} item={null} setActive={setActive} /> : null}
+      {active ? <ReportMore period={period} data={data} setActive={setActive} /> : null}
       {activeExpenses ? <Components.AddExpenses setActive={setActiveExpenses} /> : null}
       {activeExpensesMore ? <Components.Expenses date={dateMore} item={expensesDataMore} setActive={setActiveExpensesMore} /> : null}
       {activePeriod ? <Components.Period setActive={setActivePeriod} setStartDate={setStartDate} setEndDate={setEndDate} setDep={setDep}/> : null}
