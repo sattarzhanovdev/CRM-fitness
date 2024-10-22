@@ -47,11 +47,14 @@ const ReportMore = ({period, data, setActive}) => {
       cards: result.length,
       closed: closedData,
       skips: sessionsData-closedData,
-      beforeMore: `${result.filter(item => item[1].type === "До").length } * ${result.length > 0 ? result[0][1].payment : 0} = ${result.filter(item => item[1].type === "До").length * result.filter(item => item[1].type === "До")[1].payment }`,
-      afterMore: `${result.filter(item => item[1].type === "После").length} * ${result.length > 0 ? result[0][1].payment : 0} = ${result.filter(item => item[1].type === "После").length * result[0][1].payment}`,
-      payment: price
+      beforeMore: `${result?.filter(item => item[1].type === "До").length } * ${result.length > 0 ? result[0][1]?.payment : 0} = ${result.filter(item => item[1].type === "До").length * Number(result.filter(item => item[1].type === "До")[0][1].payment)}`,
+      afterMore: `${result?.filter(item => item[1].type === "После").length} * ${result.length > 0 ? result[0][1]?.payment : 0} = ${result.filter(item => item[1].type === "После").length * Number(result.filter(item => item[1].type === "До")[0][1].payment)}`,
+      payment: Number(price)
     })        
+    console.log(result.filter(item => item[1].type === "До")[0][1].payment);
   }, [])
+
+  
 
   return (
     <div className={c.container}>

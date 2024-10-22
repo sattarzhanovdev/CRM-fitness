@@ -75,6 +75,21 @@ const Report = () => {
       setEndDate('')
     }
 
+    API.getBenefit(Months.find(item => item.id === monthRep).eng)
+      .then(res => {
+        if(res.data){
+          const result = Object.entries(res.data).map((item, id) => {
+            return {
+              id, 
+              ...item
+            }
+          })
+          setDayProfit(result);
+        }else{
+          setDayProfit([]);
+        }
+      })
+
     API.getClients()
       .then(res => {
         if(res.data){
@@ -192,25 +207,15 @@ const Report = () => {
     
             setExpensesData(result); // Установка данных о расходах
             setExpenses(totalSumma); // Установка итоговой суммы
+          }else{
+            setExpenses(0)
           }
-        });
+        }
+      );
     }
 
-    API.getBenefit(Months.find(item => item.id === monthRep).eng)
-      .then(res => {
-        if(res.data){
-          const result = Object.entries(res.data).map((item, id) => {
-            return {
-              id, 
-              ...item
-            }
-          })
-          setDayProfit(result);
-        }else{
-          setDayProfit([]);
-        }
-      })
-  }, [monthRep, startDate, endDate, dep, rep])
+    
+  }, [startDate, endDate, dep, rep])
 
   const date = new Date()
   const handleAddExpenses = () => {
@@ -255,7 +260,11 @@ const Report = () => {
             <div className={c.months}>
               {
                 Months.map(item => (
-                  <button key={item.id} onClick={() => setMonthRep(item.id)} className={monthRep === item.id ? c.active : ''}>
+                  <button key={item.id} onClick={() => {
+                    setMonthRep(item.id)
+                    setDep(Math.random())
+                    localStorage.setItem('monthId', item.id)
+                  }} className={monthRep === item.id ? c.active : ''}>
                     {item.name}
                   </button>
                 ))
