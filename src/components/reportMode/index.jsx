@@ -1,7 +1,6 @@
 import React from 'react'
 import c from './reportMode.module.scss'
 import { Icons } from '../../assets/icons'
-import { API } from '../../api'
 
 const ReportMore = ({period, data, setActive}) => {
   const [ report, setReport ] = React.useState({
@@ -15,6 +14,8 @@ const ReportMore = ({period, data, setActive}) => {
     payment: 0
   })
 
+  const [ res, setRes ] = React.useState(null)
+
   React.useEffect(() => {
     const result = data.filter(item => {
       if(period === '1 месяц/через день'){
@@ -23,6 +24,8 @@ const ReportMore = ({period, data, setActive}) => {
         return item[1].everyDay
       }else if(period === '3 месяца/через день'){
         return item[1].aboutDay3
+      }else if(period === '12 месяцев/безлимит'){
+        return item[1].everyDay3
       }else if(period === '3 месяца/каждый день'){
         return item[1].everyDay3
       }else if(period === 'Единоразовые занятия'){
@@ -32,7 +35,9 @@ const ReportMore = ({period, data, setActive}) => {
       }
     })
 
-    const price = result[0][1].payment
+    setRes(result)
+
+    const price = result[0][1] && result[0][1]?.payment
 
     const closedArr = []
     const sessionsArr = []
@@ -42,16 +47,18 @@ const ReportMore = ({period, data, setActive}) => {
     const sessionsData = sessionsArr.map(item => item.length).reduce((a,b) => a+b, 0)
     
     setReport({
-      before: result.filter(item => item[1].type === "До").length,
-      after: result.filter(item => item[1].type === "После").length,
-      cards: result.length,
+      before: result?.filter(item => item[1].type === "До").length !== 0 ? result?.filter(item => item[1].type === "До").length : result.length,
+      after: result?.filter(item => item[1].type === "После").length !== 0 ? result?.filter(item => item[1].type === "После").length : result.length,
+      cards: result && result?.length,
       closed: closedData,
       skips: sessionsData-closedData,
-      beforeMore: `${result?.filter(item => item[1].type === "До").length } * ${result.length > 0 ? result[0][1]?.payment : 0} = ${result.filter(item => item[1].type === "До").length * Number(result.filter(item => item[1].type === "До")[0][1].payment)}`,
-      afterMore: `${result?.filter(item => item[1].type === "После").length} * ${result.length > 0 ? result[0][1]?.payment : 0} = ${result.filter(item => item[1].type === "После").length * Number(result.filter(item => item[1].type === "До")[0][1].payment)}`,
+      // beforeMore: `${result[0][1] && result?.filter(item => item[1].type === "До").length } * ${result[0][1] && result?.length > 0 ? result[0][1] && result[0][1]?.payment : 0} = ${result[0][1] && result?.filter(item => item[1].type === "До").length * Number(result[0][1] && result?.filter(item => item[1].type === "До")[0][1].payment)}`,
+      beforeMore: 0,
+      afterMore: 0,
+      // afterMore: `${result[0][1] && result?.filter(item => item[1].type === "После").length} * ${result[0][1] && result?.length > 0 ? result[0][1] && result[0][1]?.payment : 0} = ${result[0][1] && result?.filter(item => item[1].type === "После").length * Number(result[0][1] && result?.filter(item => item[1].type === "До")[0][1].payment)}`,
+      
       payment: Number(price)
     })        
-    console.log(result.filter(item => item[1].type === "До")[0][1].payment);
   }, [])
 
   
@@ -76,12 +83,20 @@ const ReportMore = ({period, data, setActive}) => {
           report.before !== 0 ?
           <div className={c.info}>
             <ul>
-              <li>
-                До 14:00 <span>{report.before}</span>
-              </li>
-              <li>
-                После 14:00 <span>{report.after}</span>
-              </li>
+              {
+                res[0][1].type === "До" || res[0][1].type === "После" ?
+                <>
+                  <li>
+                    До 14:00 <span>{report.before}</span>
+                  </li>
+                  <li>
+                    После 14:00 <span>{report.after}</span>
+                  </li>
+                </>  :
+                <li>
+                  Количество <span>{report.before}</span>
+                </li>
+              }
               <li>
                 За этот месяц зарегистрировано карт <span>{report.cards}</span>
               </li>
@@ -91,12 +106,20 @@ const ReportMore = ({period, data, setActive}) => {
               <li>
                 Сколько посещений сгорело <span>{report.skips}</span>
               </li>
-              <li>
-                До 14:00 <span>{report.beforeMore}</span>
-              </li>
-              <li>
-                После 14:00 <span>{report.afterMore}</span>
-              </li>
+              {
+                res[0][1].type === "До" || res[0][1].type === "После" ?
+                <>
+                  <li>
+                    До 14:00 <span>{report.beforeMore}</span>
+                  </li>
+                  <li>
+                    После 14:00 <span>{report.afterMore}</span>
+                  </li>
+                </>  :
+                <li>
+                  Сумма <span>{Number(report.before) * Number(report.payment)}</span>
+                </li>
+              }
             </ul>
           </div> :
           <div className={c.info}>

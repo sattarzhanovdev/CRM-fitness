@@ -23,6 +23,11 @@ const Edit = ({ user, setActive, setDep }) => {
     }
   }
 
+  const addAttendens = () => {
+    API.putClient(user[0], {...user[1], sessions: [...user[1].sessions, user[1].sessions[user[1].sessions.length-1]+1]})
+      .then(() => window.location.reload())
+  }
+
   return (
     <div className={c.container}>
       <div className={c.add}>
@@ -101,7 +106,10 @@ const Edit = ({ user, setActive, setDep }) => {
                             ) : user[1].attended.length && freeze && !user[1].freezed ? ( 
                               <button
                                 className={c.freeze}
-                                onClick={() => checkAttendens(user[0], user[1]?.attended, user, setDep, 'freezed')}
+                                onClick={() => {
+                                  checkAttendens(user[0], user[1]?.attended, user, setDep, 'freezed')
+                                  addAttendens()
+                                }}
                               >
                                 Заморозить
                               </button>

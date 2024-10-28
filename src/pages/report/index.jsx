@@ -69,6 +69,73 @@ const Report = () => {
     "November": 11, "December": 12
   };
 
+  const more = () => {
+    const result = data.filter(item => {
+      if(period === '1 месяц/через день'){
+        return item[1].aboutDay
+      }else if(period === '1 месяц/каждый день'){
+        return item[1].everyDay
+      }else if(period === '3 месяца/через день'){
+        return item[1].aboutDay3
+      }else if(period === '12 месяцев/безлимит'){
+        return item[1].everyDay3
+      }else if(period === '3 месяца/каждый день'){
+        return item[1].everyDay3
+      }else if(period === 'Единоразовые занятия'){
+        return item[1].once
+      }else if(period === 'Спортзал'){
+        return item[1].gym
+      }
+    })
+
+      const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
+      const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
+
+      result.forEach(monthObj => {
+      const monthName = monthObj["0"];
+      const monthNumber = monthMap[monthName]; // Преобразование названия месяца в номер
+
+      if (
+        (startYear === endYear && monthNumber >= startMonth && monthNumber <= endMonth) // Оба года одинаковы, но проверяются месяцы
+      ) {
+        const days = monthObj["1"];
+
+        Object.keys(days).forEach(day => {
+          const dayNumber = parseInt(day); // Преобразование дня в число
+
+          if (
+            (monthNumber >= startMonth && dayNumber >= startDay) || // В пределах начального месяца
+            (monthNumber <= endMonth && dayNumber <= endDay) // В пределах конечного месяца
+            (monthNumber > startMonth && monthNumber < endMonth) // Между начальным и конечным месяцами
+          ) {
+            // Суммирование всех транзакций за указанный день
+            const monthExp = [];
+            for (let i = startDay; i <= endDay; i++) {
+              if (days[i] !== undefined) {
+                monthExp.push(days[i]);
+              }
+            }
+
+            // Используем map для создания нового массива
+            const database = monthExp.map(item => {
+              return Object.values(item);
+            });
+
+            const totalSum = database.reduce((acc, group) => {
+              const groupSum = group.reduce((sum, item) => sum + item.summa, 0);
+              return acc + groupSum;
+            }, 0);
+            
+            setExpenses(totalSum);
+          }
+        });
+      }
+    });
+
+    setData(result);
+    
+  }
+
   React.useEffect(() => {
     if(rep === 1){
       setStartDate('')
@@ -176,9 +243,6 @@ const Report = () => {
                       return Object.values(item);
                     });
 
-                    console.log();
-                    
-
                     const totalSum = database.reduce((acc, group) => {
                       const groupSum = group.reduce((sum, item) => sum + item.summa, 0);
                       return acc + groupSum;
@@ -215,7 +279,7 @@ const Report = () => {
     }
 
     
-  }, [startDate, endDate, dep, rep])
+  }, [startDate, endDate, dep, rep, period])
 
   const date = new Date()
   const handleAddExpenses = () => {
@@ -421,6 +485,9 @@ const Report = () => {
                 onClick={() => {
                   setActive(true)
                   setPeriod('1 месяц/каждый день')
+                  if(rep === 2){
+                    more()
+                  }
                 }}
               >
                 Посмотреть полный отчет
