@@ -57,7 +57,7 @@ const Edit = ({ user, setActive, setDep }) => {
             null :
             <div>
               <p>Тип посещения</p>
-              <p>{user[1].type} 14:00</p>
+              <p>{user[1].type} {user[1].gym ? null : '14:00'}</p>
             </div>
           }
         </div>

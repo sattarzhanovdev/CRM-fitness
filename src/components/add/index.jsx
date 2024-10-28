@@ -9,6 +9,8 @@ import { Months } from '../../utils';
 const Add = ({clients, typeOfGym, setAddActive}) => {
   const [ phone, setPhone ] = React.useState('')
   const [ pay, setPay ] = React.useState(2500)
+  const [ timeFrom, setTimeFrom ] = React.useState('')
+  const [ timeTo, setTimeTo ] = React.useState('')
   const [ clientsId, setClientsId ] = React.useState(1)
 
   const {
@@ -31,7 +33,7 @@ const Add = ({clients, typeOfGym, setAddActive}) => {
     const data = {
       "name": value.name,
       "phone_number": phone,
-      "type": value.type,
+      "type": typeOfGym === 'gym' ? `${timeFrom} - ${timeTo}`: value.type,
       "payment": pay,
       "sessions": arr,
       "attended": "",
@@ -90,20 +92,26 @@ const Add = ({clients, typeOfGym, setAddActive}) => {
           </div>
         </div>
         <form className={c.main} onSubmit={(handleSubmit(value => addClient(value)))}>
-          <div>
-            <p>ФИО клиента</p>
-            <input type="text" placeholder='Введите Имя' {...register('name')}  />
-          </div>
-          <div>
-            <p>Номер клиента</p>
-            <IMaskInput
-              id="phone"
-              mask={"+996 (000) 00-00-00"}
-              placeholder={"+996 (___) __-__-__" }
-              onChange={e => setPhone(e.target.value)}
-            />
-            {/* <input type="text" placeholder='Номер' {...register('phone_number')} /> */}
-          </div>
+          {
+            typeOfGym !== 'once' ?
+            <>
+              <div>
+                <p>ФИО клиента</p>
+                <input type="text" placeholder='Введите Имя' {...register('name')}  />
+              </div>
+              <div>
+                <p>Номер клиента</p>
+                <IMaskInput
+                  id="phone"
+                  mask={"+996 (000) 00-00-00"}
+                  placeholder={"+996 (___) __-__-__" }
+                  onChange={e => setPhone(e.target.value)}
+                />
+                {/* <input type="text" placeholder='Номер' {...register('phone_number')} /> */}
+              </div>
+            </> :
+            null
+          }
           <div>
             <p>Оплата</p>
             {
@@ -181,21 +189,41 @@ const Add = ({clients, typeOfGym, setAddActive}) => {
                 >
                   400
                 </span>
-              </ul> : ''
+              </ul> : 
+              <ul>
+                <span 
+                  className={pay === 1000 ? c.active : ''}
+                  onClick={() => setPay(1000)}
+                >
+                  1000
+                </span>
+              </ul>
             }
             {/* <input type="text" placeholder='Введите сумму оплаты' {...register('payment')} /> */}
           </div>
           {
-              typeOfGym === 'everyDay' || typeOfGym === 'aboutDay' ?
-              <div>
-                <p>Тип посещения</p>
-                <select {...register('type')}>
-                  <option value={'До'}>До 14:00</option>
-                  <option value={'После'}>После 14:00</option>
-                </select>
-              </div> :
-              null
+            typeOfGym === 'everyDay' || typeOfGym === 'aboutDay' ?
+            <div>
+              <p>Тип посещения</p>
+              <select {...register('type')}>
+                <option value={'До'}>До 14:00</option>
+                <option value={'После'}>После 14:00</option>
+              </select>
+            </div> 
+            :
+            null
           } 
+          {
+            typeOfGym === 'gym' ?
+            <div>
+              <p>Время: </p>
+                <div className={c.time}>
+                  <input type="time" onChange={e => setTimeFrom(e.target.value)} />
+                  <input type="time" onChange={e => setTimeTo(e.target.value)}/>
+                </div> 
+            </div> :
+            null
+          }
           <div className={c.save}>
             <button type='submit'>Сохранить</button>
           </div>
