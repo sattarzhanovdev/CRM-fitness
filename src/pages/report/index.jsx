@@ -323,7 +323,7 @@ const Report = () => {
             rep === 1 || rep === 3 || rep === 4?
             <div className={c.months}>
               {
-                Months.map(item => (
+                Months.slice(0, 12).map(item => (
                   <button key={item.id} onClick={() => {
                     setMonthRep(item.id)
                     setDep(Math.random())
@@ -512,9 +512,9 @@ const Report = () => {
                 <span className={c.period}>
                   {
                     rep === 2 && startDate && endDate ?
-                    `${splittedStartDate[2]} ${Months.find(item => item.id === Number(splittedStartDate[1])).name} - ${splittedEndDate[2]} ${Months.find(item => item.id === Number(splittedEndDate[1])).name}` 
+                      `${splittedStartDate[2]} ${Months.find(item => item.id === Number(splittedStartDate[1])).name} - ${splittedEndDate[2]} ${Months.find(item => item.id === Number(splittedEndDate[1])).name}` 
                     :
-                    `1 ${Months.find(item => item.id === monthRep).name.toLowerCase()} - 1 ${Months.find(item => item.id === monthRep+1).name.toLowerCase()}`
+                    `1 ${Months.find(item => item.id === monthRep).name.toLowerCase()} - 1 ${monthRep === 12 ? Months.find(item => item.id === 1).name.toLowerCase() : Months.find(item => item.id === monthRep + 1).name.toLowerCase()}`
                   }
                 </span>
               </td>
