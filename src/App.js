@@ -61,7 +61,7 @@ function App() {
       <div className='content'>
         <MainRoutes />
       </div> */}
-      <h1>Ошибку сервера 400</h1>
+      <h1>Ошибка сервера 400</h1>
     </div>
   )
 }
