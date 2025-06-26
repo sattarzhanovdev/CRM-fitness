@@ -57,10 +57,11 @@ function App() {
   }, [])
   return (
     <div className='main'>
-      <Components.Sidebar />
+      {/* <Components.Sidebar />
       <div className='content'>
         <MainRoutes />
-      </div>
+      </div> */}
+      <h1>Ведутся технические работы</h1>
     </div>
   )
 }
