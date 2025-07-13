@@ -1,31 +1,69 @@
 import React from 'react'
 import c from './edit.module.scss'
 import { Icons } from '../../assets/icons'
-import { checkAttendens } from '../../helpers'
 import { API } from '../../api'
 
-const Edit = ({ user, setActive, setDep }) => {
+const Edit = ({ user, setActive }) => {
   const [freeze, setFreeze] = React.useState(false)
+  const [client, setClient] = React.useState(user[1])
+
+  const date = new Date()
+
+  React.useEffect(() => {
+    setClient(user[1])
+  }, [user])
 
   const handleDelete = () => {
     API.deleteClient(user[0])
       .then(() => window.location.reload())
   }
 
-  const date = new Date()
-
   const handleExtend = () => {
-    if(user[1].attended.length === user[1].sessions.length){
-      API.putClient(user[0], {...user[1], attended: "", day: date.getDate(), month: date.getMonth(), year: date.getFullYear()})
-        .then(() => window.location.reload())
-    }else{
+    if (client.attended?.length === client.sessions?.length) {
+      API.putClient(user[0], {
+        ...client,
+        attended: "",
+        day: date.getDate(),
+        month: date.getMonth(),
+        year: date.getFullYear()
+      }).then(() => window.location.reload())
+    } else {
       alert('Еще есть дни!')
     }
   }
 
-  const addAttendens = () => {
-    API.putClient(user[0], {...user[1], sessions: [...user[1].sessions, user[1].sessions[user[1].sessions.length-1]+1]})
-      .then(() => window.location.reload())
+  const markAttendance = async (type = 'checked') => {
+    const time = `${date.getDate()} ${getMonthName(date.getMonth())}/${date.getHours()}:${date.getMinutes()}`
+    const newEntry = {
+      num: client.attended?.length + 1 || 1,
+      time,
+      type
+    }
+
+    const newAttended = Array.isArray(client.attended)
+      ? [...client.attended, newEntry]
+      : [newEntry]
+
+    const updatedData = { ...client, attended: newAttended }
+
+    if (type === 'freezed') {
+      updatedData.sessions = [
+        ...client.sessions,
+        client.sessions[client.sessions.length - 1] + 1
+      ]
+    }
+
+    await API.putClient(user[0], updatedData)
+    setClient(updatedData)
+  }
+
+  const getMonthName = (index) => {
+    const months = [
+      'Январь', 'Февраль', 'Март', 'Апрель',
+      'Май', 'Июнь', 'Июль', 'Август',
+      'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+    ]
+    return months[index]
   }
 
   return (
@@ -34,104 +72,105 @@ const Edit = ({ user, setActive, setDep }) => {
         <div className={c.up}>
           <div className={c.left}>
             <h1>Изменение данных</h1>
-            <p>Этот клиент под номером {user.id}</p>
+            <p>Этот клиент под номером {user?.id}</p>
           </div>
           <div className={c.right}>
-            <li
-              onClick={() => setActive(false)}
-            >
+            <li onClick={() => setActive(false)}>
               <img src={Icons.close} alt="" />
             </li>
           </div>
         </div>
+
         <div className={c.main}>
           <div>
             <p>ФИО клиента</p>
-            <p>{user[1].name}</p>
+            <p>{client.name}</p>
           </div>
           <div>
             <p>Номер клиента</p>
-            <p>{user[1].phone_number}</p>
+            <p>{client.phone_number}</p>
           </div>
           <div>
             <p>Оплата</p>
-            <p>{user[1].payment} сом</p>
+            <p>{client.payment} сом</p>
           </div>
           {
-            user[1].freeAboutDay || user[1].freeEveryDay ?
-            null :
-            <div>
-              <p>Тип посещения</p>
-              <p>{user[1].type} {user[1].gym ? null : '14:00'}</p>
-            </div>
+            client.freeAboutDay || client.freeEveryDay ? null : (
+              <div>
+                <p>Тип посещения</p>
+                <p>{client.type} {client.gym ? null : '14:00'}</p>
+              </div>
+            )
           }
         </div>
+
         {
-          !user[1].freeAboutDay && !user[1].freeEveryDay ?
-          <div className={c.sessions}>
-            {
-              user[1].sessions ?
-                user[1].sessions.map((item, i) => (
-                  <div>
-                    <button className={user[1]?.attended[i]?.type === 'checked' ? c.active : ''}>
-                      {item}
-                    </button>
-                    {
-                      user[1]?.attended?.length === 0 || !user[1].attended ? (
-                        <button
-                          className={c.check}
-                          onClick={() => {
-                            checkAttendens(user[0], user[1]?.attended, user, setDep, 'checked');
-                            setActive(false)
-                          }}
-                        >
-                          Отметить
-                        </button>
-                      ) : (
-                        user[1].attended ? (
-                          user[1].attended[user[1].attended.length - 1].num >= item ? (
-                            user[1]?.attended[i]?.type === 'freezed' ? (
+          !client.freeAboutDay && !client.freeEveryDay && (
+            <div className={c.sessions}>
+              {
+                client.sessions?.map((item, i) => {
+                  const attended = client.attended || []
+                  const isChecked = attended[i]?.type === 'checked'
+                  const isFreezed = attended[i]?.type === 'freezed'
+                  const isLast = i === attended.length
+
+                  return (
+                    <div key={i}>
+                      <button className={isChecked ? c.active : ''}>
+                        {item}
+                      </button>
+
+                      {
+                        attended.length === 0 ? (
+                          <button
+                            className={c.check}
+                            onClick={() => markAttendance('checked')}
+                          >
+                            Отметить
+                          </button>
+                        ) : (
+                          attended[attended.length - 1]?.num >= item ? (
+                            isFreezed ? (
                               <button className={c.frozen}>Заморожено</button>
                             ) : (
-                              <p>{user[1]?.attended[i]?.time}</p>
+                              <p>{attended[i]?.time}</p>
                             )
                           ) : (
-                            i === user[1].attended.length && !freeze ? (
+                            isLast && !freeze ? (
                               <button
                                 className={c.check}
-                                onClick={() => checkAttendens(user[0], user[1]?.attended, user, setDep, 'checked')}
+                                onClick={() => markAttendance('checked')}
                               >
                                 Отметить
                               </button>
-                            ) : user[1].attended.length && freeze && !user[1].freezed ? ( 
-                              <button
-                                className={c.freeze}
-                                onClick={() => {
-                                  checkAttendens(user[0], user[1]?.attended, user, setDep, 'freezed')
-                                  addAttendens()
-                                }}
-                              >
-                                Заморозить
-                              </button>
-                            ) : null
+                            ) : (
+                              isLast && freeze ? (
+                                <button
+                                  className={c.freeze}
+                                  onClick={() => markAttendance('freezed')}
+                                >
+                                  Заморозить
+                                </button>
+                              ) : null
+                            )
                           )
-                        ) : (
-                          <p></p>
                         )
-                      )
-                    }
-                  </div>
-                )) :
-                null
-            }
-          </div> :
-          null
+                      }
+                    </div>
+                  )
+                })
+              }
+            </div>
+          )
         }
+
         <div className={c.btns}>
           <button>Сохранить</button>
-          <button onClick={() => handleDelete()}>Удалить</button>
-          <button onClick={() => setFreeze(!freeze)}>{freeze ? 'Отменить' : 'Режим заморозки'}</button>
-          <button onClick={() => handleExtend()}>Продлить</button>
+          <button onClick={handleDelete}>Удалить</button>
+          <button onClick={() => setFreeze(!freeze)}>
+            {freeze ? 'Отменить' : 'Режим заморозки'}
+          </button>
+          <button onClick={handleExtend}>Продлить</button>
         </div>
       </div>
     </div>

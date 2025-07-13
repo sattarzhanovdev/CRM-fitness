@@ -57,11 +57,11 @@ function App() {
   }, [])
   return (
     <div className='main'>
-      {/* <Components.Sidebar />
+      <Components.Sidebar />
       <div className='content'>
         <MainRoutes />
-      </div> */}
-      <h1>Ошибка сервера 400</h1>
+      </div>
+      {/* <h1>Ошибка сервера 400</h1> */}
     </div>
   )
 }

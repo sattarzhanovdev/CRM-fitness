@@ -73,6 +73,14 @@ export const PUBLIC_ROUTES = [
     page: <Pages.Gym />,
     icon: Icons.user ,
     active: Icons.userActive
+  },
+  {
+    id: 10,
+    title: 'Заморозка',
+    path: '/freezed/',
+    page: <Pages.Freezes />,
+    icon: Icons.user ,
+    active: Icons.userActive
   }
 ]
 

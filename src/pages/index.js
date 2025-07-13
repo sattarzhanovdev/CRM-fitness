@@ -8,6 +8,7 @@ import Gym from "./gym";
 import Once from "./once";
 import FreeDayAbout from "./freeDayAbout";
 import FreeEveryDay from "./freeEveryDay";
+import Freezes from "./freeze";
 
 export const Pages = {
   MonthDayAbout,
@@ -19,5 +20,6 @@ export const Pages = {
   Gym,
   Once,
   FreeDayAbout,
-  FreeEveryDay
+  FreeEveryDay, 
+  Freezes
 }

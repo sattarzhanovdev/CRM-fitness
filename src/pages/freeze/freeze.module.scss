@@ -1,0 +1,70 @@
+.freezeContainer {
+  padding: 24px;
+  background-color: #f7f7f7;
+}
+
+.freezeTitle {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.noClients {
+  color: #999;
+  font-style: italic;
+}
+
+.freezeCard {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+.clientName {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.clientPhone {
+  margin: 0 0 16px;
+  color: #555;
+  font-size: 14px;
+}
+
+.freezeList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.freezeItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.freezeText {
+  color: #444;
+  font-size: 15px;
+}
+
+.cancelButton {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 10px;
+
+  &:hover {
+    background-color: #c0392b;
+  }
+}
