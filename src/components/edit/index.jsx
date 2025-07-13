@@ -6,16 +6,17 @@ import { API } from '../../api'
 const Edit = ({ user, setActive }) => {
   const [freeze, setFreeze] = React.useState(false)
   const [client, setClient] = React.useState(user[1])
+  const [newId, setNewId] = React.useState(user[0]) // ID можно редактировать
 
   const date = new Date()
 
   React.useEffect(() => {
     setClient(user[1])
+    setNewId(user[0])
   }, [user])
 
   const handleDelete = () => {
-    API.deleteClient(user[0])
-      .then(() => window.location.reload())
+    API.deleteClient(user[0]).then(() => window.location.reload())
   }
 
   const handleExtend = () => {
@@ -29,6 +30,22 @@ const Edit = ({ user, setActive }) => {
       }).then(() => window.location.reload())
     } else {
       alert('Еще есть дни!')
+    }
+  }
+
+  const handleSave = async () => {
+    if (!newId || !client) return
+
+    try {
+      if (newId !== user[0]) {
+        await API.putClient(newId, client)
+        await API.deleteClient(user[0])
+      } else {
+        await API.putClient(user[0], client)
+      }
+      window.location.reload()
+    } catch (e) {
+      console.error('Ошибка при сохранении:', e)
     }
   }
 
@@ -72,7 +89,7 @@ const Edit = ({ user, setActive }) => {
         <div className={c.up}>
           <div className={c.left}>
             <h1>Изменение данных</h1>
-            <p>Этот клиент под номером {user?.id}</p>
+            <p>Клиент ID: {client.personal_id}</p>
           </div>
           <div className={c.right}>
             <li onClick={() => setActive(false)}>
@@ -89,6 +106,14 @@ const Edit = ({ user, setActive }) => {
           <div>
             <p>Номер клиента</p>
             <p>{client.phone_number}</p>
+          </div>
+          <div>
+            <p>Personal ID</p>
+            <input
+              type="text"
+              value={client.personal_id || ''}
+              onChange={e => setClient({ ...client, personal_id: e.target.value })}
+            />
           </div>
           <div>
             <p>Оплата</p>
@@ -122,10 +147,7 @@ const Edit = ({ user, setActive }) => {
 
                       {
                         attended.length === 0 ? (
-                          <button
-                            className={c.check}
-                            onClick={() => markAttendance('checked')}
-                          >
+                          <button className={c.check} onClick={() => markAttendance('checked')}>
                             Отметить
                           </button>
                         ) : (
@@ -137,18 +159,12 @@ const Edit = ({ user, setActive }) => {
                             )
                           ) : (
                             isLast && !freeze ? (
-                              <button
-                                className={c.check}
-                                onClick={() => markAttendance('checked')}
-                              >
+                              <button className={c.check} onClick={() => markAttendance('checked')}>
                                 Отметить
                               </button>
                             ) : (
                               isLast && freeze ? (
-                                <button
-                                  className={c.freeze}
-                                  onClick={() => markAttendance('freezed')}
-                                >
+                                <button className={c.freeze} onClick={() => markAttendance('freezed')}>
                                   Заморозить
                                 </button>
                               ) : null
@@ -165,7 +181,7 @@ const Edit = ({ user, setActive }) => {
         }
 
         <div className={c.btns}>
-          <button>Сохранить</button>
+          <button onClick={handleSave}>Сохранить</button>
           <button onClick={handleDelete}>Удалить</button>
           <button onClick={() => setFreeze(!freeze)}>
             {freeze ? 'Отменить' : 'Режим заморозки'}
