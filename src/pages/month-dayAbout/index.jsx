@@ -44,7 +44,9 @@ const MonthDayAbout = () => {
   }, [dep, hour])
 
   const searchUser = search.length > 0 ? clients?.filter(item => item[1].name.toLowerCase().includes(search.toLowerCase())) : clients
-
+  
+  console.log(searchUser?.map(item => item[1]));
+  
   return (
     <div className={c.container}>
       <div className={c.tracking}>
@@ -158,9 +160,9 @@ const MonthDayAbout = () => {
                 <td>
                   <p className={c.count}>
                     {
-                      item[1].attended ?
-                      item[1].sessions[item[1].sessions.length - 1] - item[1]?.attended[item[1].attended?.length - 1]?.num :
-                      12
+                      item[1].attended && item[1].attended.length > 0
+                      ? (item[1].sessions[item[1].sessions.length - 1] - item[1].attended[item[1].attended.length - 1]?.num)
+                      : 12
                     }
                   </p>
                 </td>
