@@ -129,7 +129,7 @@ const Add = ({ clients, typeOfGym, setAddActive }) => {
               typeOfGym === 'aboutDay' ? (
                 <ul>
                   <span className={pay === 2500 ? c.active : ''} onClick={() => setPay(2500)}>2500</span>
-                  <span className={pay === 3500 ? c.active : ''} onClick={() => setPay(3500)}>3000</span>
+                  <span className={pay === 3000 ? c.active : ''} onClick={() => setPay(3000)}>3000</span>
                 </ul>
               ) : typeOfGym === 'everyDay' ? (
                 <ul>
